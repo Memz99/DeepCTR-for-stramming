@@ -4,12 +4,12 @@ do="eval"
 task="1700w_epoch1"
 table="xtr_base"
 
-train_date="20210527_filtered"
+train_date="20210608_filtered"
 train_path="${root}/data/${table}/${train_date}_train_splits"
 info_path="${root}/data/vocab/${table}_${train_date}.pkl"
 checkpoint_save_path="${root}/result/${table}/${train_date}/${task}_checkpoint"
 
-eval_date="20210528_keys_in_0527"
+eval_date="20210609_keys_in_0608"
 eval_path="${root}/data/${table}/${eval_date}_eval_splits"
 checkpoint_load_path="${root}/result/xtr_base/${train_date}/${task}_checkpoint"
 

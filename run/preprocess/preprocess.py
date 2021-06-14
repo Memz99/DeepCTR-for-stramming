@@ -50,6 +50,7 @@ def split_dataset(data_file):
                   sparse_features=sparse_features,
                   usecols=sparse_features+dense_features+label_features)
     data, eval = train_test_split(data, train_size=0.9)
+    data.to_csv(data_file+"_train", index=False)
     split_files(data, data_file + "_train")
     split_files(eval, data_file + "_eval")
     eval = None
