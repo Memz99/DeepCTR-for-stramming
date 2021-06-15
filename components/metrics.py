@@ -77,11 +77,11 @@ class InteralMAE():
             if n1 > 0:
                 self.n[interal] += n1
 
-                loss = abs(sum(pred[lind] - y[lind])) * 100
+                loss = sum(abs(pred[lind] - y[lind])) * 100
                 e0 = self.e[interal]
                 self.e[interal] = e0 + (loss - n1 * e0) / self.n[interal]
 
-                loss = abs(sum(emp_pred[lind] - y[lind])) * 100
+                loss = sum(abs(emp_pred[lind] - y[lind])) * 100
                 e0 = self.emp_e[interal]
                 self.emp_e[interal] = e0 + (loss - n1 * e0) / self.n[interal]
 
