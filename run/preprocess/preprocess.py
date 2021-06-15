@@ -7,10 +7,10 @@ import pandas as pd
 
 from tqdm import tqdm
 
-root = "/Users/hemingzhi/Documents/Projects/ctr"
-# root = "/home/hemingzhi/.jupyter/ctr"
+# root = "/Users/hemingzhi/Documents/Projects/ctr"
+root = "/home/hemingzhi/.jupyter/ctr"
 table = "xtr_base"
-date = "20210528_filtered"
+date = "20210608_filtered"
 frag_size = 20000
 
 config_path = os.path.join(root, 'run/preprocess/configs/xtr_base_no_sparse.json')
