@@ -48,11 +48,12 @@ class InteralMAE():
         points = (2 ** np.linspace(np.log2(l), np.log2(r), interal_nums)).astype(int)
         self.interals = list(zip(points[:-1], points[1:]))
 
-        self.pv_idx = [fc.index[0] for fc in feature_columns]
+        # self.pv_idx = [fc.index[0] for fc in feature_columns]
         for fc in feature_columns:
             if fc.name == "pv": self.pv_idx = fc.index[0]
             if fc.name == "show_cnt": self.show_cnt_idx = fc.index[0]
             if fc.name == "click_cnt": self.click_cnt_idx = fc.index[0]
+            if fc.name == "item_id": self.item_id_idx = fc.index[0]
 
         self.n = {interal: 0. for interal in self.interals}
         self.e = {interal: 0. for interal in self.interals}
@@ -61,7 +62,7 @@ class InteralMAE():
 
         self.save_path = save_path
         self.ofp = open(os.path.join(save_path, "prediction"), 'w')
-        self.ofp.write("pred\tgt\n")
+        self.ofp.write("item_id\tpv\tpred\tgt\n")
 
     def update(self, inputs, pred, y):
         pv = inputs[:, self.pv_idx]
@@ -88,7 +89,11 @@ class InteralMAE():
                 y0 = self.y[interal]
                 self.y[interal] = y0 + (loss - n1 * y0) / self.n[interal]
 
-        lines = ['\t'.join(line) for line in zip(pred.round(3).astype(str), y.round(3).astype(str))]
+        item_id = inputs[:, self.item_id_idx]
+        lines = ['\t'.join(line) for line in zip(item_id.astype(str),
+                                                 pv.astype(str),
+                                                 pred.round(3).astype(str),
+                                                 y.round(3).astype(str))]
         self.ofp.write('\n'.join(lines))
 
     def echo(self):
@@ -113,4 +118,4 @@ class InteralMAE():
         ax.set_ylabel("MAE * 100")
         ax.set_title("Model Prediction vs Empirical for the next day CLICK_RATE")
         ax.legend(loc='upper right')
-        fig.savefig(self.save_path + "_fig.png", dpi=130)
+        fig.savefig(os.path.join(self.save_path, "fig.png"), dpi=130)
