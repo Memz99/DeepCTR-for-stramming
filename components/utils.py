@@ -6,6 +6,8 @@ from sklearn.preprocessing import OrdinalEncoder, LabelEncoder, MinMaxScaler
 import numpy as np
 import pandas as pd
 
+import torch
+
 
 def redirect_stdouterr_to_file(log_file):
     import logging
@@ -88,19 +90,23 @@ class Logger(object):
 
 
 class Optimizers(object):
-    def __init__(self):
+    def __init__(self, step_size=10000):
         self.optims = []
+        self.schedulers = []
+        self.step_size = step_size
 
     def add(self, optim):
         self.optims.append(optim)
+        self.schedulers.append(torch.optim.lr_scheduler.StepLR(optim, self.step_size, gamma=0.1))
 
     def zero_grad(self):
         for optim in self.optims:
             optim.zero_grad()
 
     def step(self):
-        for optim in self.optims:
-            optim.step()
+        for i in range(len(self.optims)):
+            self.optims[i].step()
+            self.schedulers[i].step()
 
 def save_checkpoint(model, path):
     import os

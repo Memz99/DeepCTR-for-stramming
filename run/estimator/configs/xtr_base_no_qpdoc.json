@@ -3,6 +3,17 @@
   "dense_features": [
     "show_cnt",
     "click_cnt",
+    "play_cnt",
+    "like_cnt",
+    "follow_cnt",
+    "long_view_cnt",
+    "short_view_cnt",
+    "first_click_cnt",
+    "last_click_cnt",
+    "first_view_long_cnt",
+    "last_view_long_cnt",
+    "slide_show",
+    "slide_click",
     "pv"
   ],
   "sparse_embedding_features": [
