@@ -139,8 +139,8 @@ def initialize(cfg, train_info, sparse_feature_info, dense_feature_info):
 
 
 def train(cfg, model, optims, loader):
-    loss_func = F.binary_cross_entropy
-    # loss_func = F.mse_loss
+    #  loss_func = F.binary_cross_entropy
+    loss_func = F.mse_loss
 
     logger = Logger(cfg['log_step'], "Train")
     for epoch in range(cfg['epoch']):
