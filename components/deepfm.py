@@ -100,7 +100,7 @@ class Linear(nn.Module):
 #         dense_value_list = [X[:, self.feature_index[feat.name][0]:self.feature_index[feat.name][1]] for feat in
 #                             self.dense_feature_columns]
 
-        linear_logit = torch.zeros([inputs.shape[0], 1]).to(sparse_embedding_list[0].device)
+        linear_logit = torch.zeros([inputs.shape[0], 1]).to(dense_value_list[0].device)
         if len(sparse_embedding_list) > 0:
             sparse_embedding_cat = torch.cat(sparse_embedding_list, dim=-1)
             sparse_feat_logit = torch.sum(sparse_embedding_cat, dim=-1, keepdim=False)
@@ -174,11 +174,14 @@ class DeepFM(nn.Module):
             fm_input = torch.cat(sparse_embedding_list, dim=1)
             logit += self.fm(fm_input)
 
-        sparse_dnn_input = torch.flatten(
-            torch.cat(sparse_embedding_list, dim=-1), start_dim=1)
         dense_dnn_input = torch.flatten(
             torch.cat(dense_value_list, dim=-1), start_dim=1)
-        dnn_input = torch.cat((sparse_dnn_input, dense_dnn_input), dim=-1)
+        if sparse_embedding_list:
+            sparse_dnn_input = torch.flatten(
+                torch.cat(sparse_embedding_list, dim=-1), start_dim=1)
+            dnn_input = torch.cat((sparse_dnn_input, dense_dnn_input), dim=-1)
+        else:
+            dnn_input = dense_dnn_input
         dnn_logit = self.dnn(dnn_input)
         logit += dnn_logit
 

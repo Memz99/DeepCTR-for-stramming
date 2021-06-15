@@ -1,7 +1,7 @@
 set -x
 root="/Users/hemingzhi/Documents/Projects/ctr"
 is_local=True
-do="eval"
+do="train"
 task="1700w_epoch1"
 table="xtr_base"
 

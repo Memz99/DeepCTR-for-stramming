@@ -108,7 +108,7 @@ def initialize(cfg, sparse_feature_info, dense_feature_info):
                               for name, v in sparse_feature_columns_info.items()]
     dense_feature_columns = [DenseFeat(name, v['index']) for name, v in dense_feature_columns_info.items()]
 
-    model = DeepFM(sparse_feature_columns, dense_feature_columns)
+    model = DeepFM(sparse_feature_columns, dense_feature_columns, device=cfg['device'])
 
     _ = model.to(cfg['device'])
 
