@@ -5,7 +5,7 @@ do="eval"
 epoch=30
 train_batch_size=4800
 
-task="1700w_epoch30_batch_size4800_CE"
+task="1700w_epoch1_CE"
 table="xtr_base"
 
 train_date="20210608_filtered"
