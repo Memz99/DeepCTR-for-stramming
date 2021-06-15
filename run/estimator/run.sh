@@ -18,10 +18,10 @@ checkpoint_load_path="${root}/result/xtr_base/${train_date}/${task}_train/checkp
 
 if [ "$do" = "train" ]
 then
-  save_path="${root}/result/${table}/${train_date}/${task}_${do}_log"
+  save_path="${root}/result/${table}/${train_date}/${task}_${do}"
 elif [ "$do" = "eval" ]
 then
-  save_path="${root}/result/${table}/${eval_date}/${task}_${do}_log"
+  save_path="${root}/result/${table}/${eval_date}/${task}_${do}"
 fi
 
 
