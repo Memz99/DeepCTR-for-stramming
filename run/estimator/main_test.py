@@ -30,6 +30,9 @@ flags.DEFINE_string('eval_path', "", "eval splits")
 flags.DEFINE_string('checkpoint_load_path', "", "checkpoint load path")
 flags.DEFINE_string('log_path', "", "log save path")
 
+flags.DEFINE_integer('epoch', 1, "epoch")
+flags.DEFINE_integer('train_batch_size', 320, "batch size")
+
 def parse_config():
     cfg = {}
     cfg['root'] = FLAGS.root
@@ -54,6 +57,9 @@ def parse_config():
         cfg['train_batch_size'], cfg['eval_batch_size'] = 320, 64800
         cfg['log_step'] = 2000
 
+
+    cfg['epoch'] = FLAGS.epoch
+    cfg['train_batch_size'] = FLAGS.train_batch_size
     cfg['device'] = 'cpu'
     use_cuda = True
     if use_cuda and torch.cuda.is_available():
@@ -132,7 +138,7 @@ def train(cfg, model, optims, loader):
     loss_func = F.binary_cross_entropy
 
     logger = Logger(cfg['log_step'], "Train")
-    for epoch in range(1):
+    for epoch in range(cfg['epoch']):
         loader.dataset.dataset.reset()
         for batch in loader:
             inputs, y = batch['features'].to(cfg['device']), batch['label'].squeeze().to(cfg['device'])
@@ -142,13 +148,13 @@ def train(cfg, model, optims, loader):
             loss = loss_func(y_pred, y, reduction='sum')
             loss.backward()
             optims.step()
-            logger.log_info(loss=loss.item(), size=320, epoch=epoch)
+            logger.log_info(loss=loss.item(), size=cfg['train_batch_size'], epoch=epoch)
     save_checkpoint(model, cfg['checkpoint_save_path'])
 
 def eval(cfg, model, loader):
     loss_func = F.mse_loss
     loss_class = InteralMAE(model.dense_feature_columns,
-                            l=300, r=10000000, interal_nums=100)
+                            l=300, r=10000000, interal_nums=50)
     logger = Logger(cfg['log_step'], "Test")
     for batch in loader:
         inputs, y = batch['features'].to(cfg['device']), batch['label'].squeeze().to(cfg['device'])
