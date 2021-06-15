@@ -62,7 +62,7 @@ class InteralMAE():
 
         self.save_path = save_path
         self.ofp = open(os.path.join(save_path, "prediction"), 'w')
-        self.ofp.write("item_id\tpv\tpred\tgt\n")
+        self.ofp.write("item_id\tpv\tpred\temp\tgt\n")
 
     def update(self, inputs, pred, y):
         pv = inputs[:, self.pv_idx]
@@ -93,6 +93,7 @@ class InteralMAE():
         lines = ['\t'.join(line) for line in zip(item_id.astype(str),
                                                  pv.astype(str),
                                                  pred.round(3).astype(str),
+                                                 emp_pred.round(3).astype(str),
                                                  y.round(3).astype(str))]
         self.ofp.write('\n'.join(lines))
 
