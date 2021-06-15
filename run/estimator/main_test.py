@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 
 sys.path.append('../../')
 import csv
@@ -24,7 +25,8 @@ flags.DEFINE_boolean('is_local', False, "wheather do eval")
 flags.DEFINE_string('do', 'train', "what task the esitimator gonna do. [train, eval, train&eval]")
 flags.DEFINE_string('root', "/home/hemingzhi/.jupyter/ctr", "project root")
 flags.DEFINE_string('train_path', "", "train splites")
-flags.DEFINE_string('info_path', "", "vocab load path")
+flags.DEFINE_string('data_info_path', "", "vocab load path")
+flags.DEFINE_string('train_info_path', "", "train config load path")
 flags.DEFINE_string('eval_path', "", "eval splits")
 flags.DEFINE_string('checkpoint_load_path', "", "checkpoint load path")
 flags.DEFINE_string('save_path', "", "result save path")
@@ -39,7 +41,8 @@ def parse_config():
     cfg['do'] = FLAGS.do
 
     cfg['train_path'] = FLAGS.train_path
-    cfg['info_path'] = FLAGS.info_path
+    cfg['data_info_path'] = FLAGS.data_info_path
+    cfg['train_info_path'] = FLAGS.train_info_path
     cfg['eval_path'] = FLAGS.eval_path
     cfg['checkpoint_load_path'] = FLAGS.checkpoint_load_path
     cfg['save_path'] = FLAGS.save_path
@@ -66,12 +69,13 @@ def parse_config():
     return cfg
 
 
-def get_configuration(info_path):
-    with open(info_path, 'rb') as pkl:
+def get_configuration(train_info_path, data_info_path):
+    with open(data_info_path, 'rb') as pkl:
         sparse_feature_info = pickle.load(pkl)
         dense_feature_info = pickle.load(pkl)
         label_feature_info = pickle.load(pkl)
-    return sparse_feature_info, dense_feature_info, label_feature_info
+    train_info = json.load(open(train_info_path, 'r'),)
+    return train_info, sparse_feature_info, dense_feature_info, label_feature_info
 
 
 def get_dataset(files, encoder_items, ret_idxs, label_feature_info, batch_size=320, buffer_size=1, num_workers=0):
@@ -82,7 +86,7 @@ def get_dataset(files, encoder_items, ret_idxs, label_feature_info, batch_size=3
     return loader
 
 
-def initialize(cfg, sparse_feature_info, dense_feature_info):
+def initialize(cfg, train_info, sparse_feature_info, dense_feature_info):
     # Define Model
     sparse_feature_columns_info = dict()
     dense_feature_columns_info = dict()
@@ -91,18 +95,20 @@ def initialize(cfg, sparse_feature_info, dense_feature_info):
     start = 0
 
     for fname, v in sparse_feature_info.items():
-        sparse_feature_columns_info[fname] = {'index': (start, start + v['index'][1] - v['index'][0]),
-                                              'vocab_size': len(v['vocab']),
-                                              'is_sparse': v['is_sparse']}
-        start += v['index'][1] - v['index'][0]
-        idxs = list(range(*v['index']))
-        encoder_items.append([idxs, v['vocab']])
-        ret_idxs += idxs
+        if fname in train_info['sparse_features']:
+            sparse_feature_columns_info[fname] = {'index': (start, start + v['index'][1] - v['index'][0]),
+                                                  'vocab_size': len(v['vocab']),
+                                                  'is_sparse': v['is_sparse']}
+            start += v['index'][1] - v['index'][0]
+            idxs = list(range(*v['index']))
+            encoder_items.append([idxs, v['vocab']])
+            ret_idxs += idxs
     for fname, v in dense_feature_info.items():
-        dense_feature_columns_info[fname] = {'index': (start, start + v['index'][1] - v['index'][0])}
-        start += v['index'][1] - v['index'][0]
-        idxs = list(range(*v['index']))
-        ret_idxs += idxs
+        if fname in train_info['dense_features']:
+            dense_feature_columns_info[fname] = {'index': (start, start + v['index'][1] - v['index'][0])}
+            start += v['index'][1] - v['index'][0]
+            idxs = list(range(*v['index']))
+            ret_idxs += idxs
 
     sparse_feature_columns = [SparseFeat(name, v['index'], v['vocab_size'], 8, v['is_sparse'])
                               for name, v in sparse_feature_columns_info.items()]
@@ -167,12 +173,15 @@ def eval(cfg, model, loader):
 def main(argv):
     cfg = parse_config()
     redirect_stdouterr_to_file(os.path.join(cfg['save_path'], "log"))
-    sparse_feature_info, dense_feature_info, label_feature_info = get_configuration(cfg['info_path'])
+    train_info, \
+    sparse_feature_info, \
+    dense_feature_info, \
+    label_feature_info = get_configuration(cfg['train_info_path'], cfg['data_info_path'])
 
     model, optims, \
     sparse_feature_columns_info, \
     dense_feature_columns_info, \
-    encoder_items, ret_idxs = initialize(cfg, sparse_feature_info, dense_feature_info)
+    encoder_items, ret_idxs = initialize(cfg, train_info, sparse_feature_info, dense_feature_info)
 
     if cfg['do'] == 'train':
         train_files = sorted([os.path.join(cfg['train_path'], file) for file in os.listdir(cfg['train_path'])])

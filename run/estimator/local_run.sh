@@ -7,7 +7,8 @@ table="xtr_base"
 
 train_date="20210527_filtered"
 train_path="${root}/data/${table}/${train_date}_train_splits"
-info_path="${root}/data/vocab/${table}_${train_date}.pkl"
+data_info_path="${root}/data/vocab/${table}_${train_date}.pkl"
+train_info_path="${root}/run/estimator/configs/xtr_base_no_sparse.json"
 
 eval_date="20210528_filtered"
 eval_path="${root}/data/${table}/${eval_date}_eval_splits"
@@ -25,6 +26,7 @@ python ./main_test.py \
   --root $root --is_local $is_local \
   --do $do \
   --train_path $train_path --eval_path $eval_path \
-  --info_path $info_path \
+  --data_info_path $data_info_path \
+  --train_info_path $train_info_path \
   --checkpoint_load_path $checkpoint_load_path  \
   --save_path $save_path

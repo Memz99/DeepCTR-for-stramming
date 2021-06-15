@@ -1,0 +1,28 @@
+{
+  "sparse_features": [],
+  "dense_features": [
+    "show_cnt",
+    "click_cnt",
+    "play_cnt",
+    "like_cnt",
+    "follow_cnt",
+    "long_view_cnt",
+    "short_view_cnt",
+    "first_click_cnt",
+    "last_click_cnt",
+    "first_view_long_cnt",
+    "last_view_long_cnt",
+    "slide_show",
+    "slide_click",
+    "pv",
+    "qp_doc_cqr_v2",
+    "qp_doc_mixture_bwei",
+    "qp_doc_video_bwei",
+    "qp_doc_username_bwei",
+    "qp_doc_bow_embedding_score",
+    "qp_doc_omit_score",
+    "qp_doc_mixture_omit"
+  ],
+  "sparse_embedding_features": [
+  ]
+}

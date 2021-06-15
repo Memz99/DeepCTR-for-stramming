@@ -11,9 +11,9 @@ from tqdm import tqdm
 root = "/home/hemingzhi/.jupyter/ctr"
 table = "xtr_base"
 date = "20210608_filtered"
-frag_size = 20000
+frag_size = 200000
 
-config_path = os.path.join(root, 'run/preprocess/configs/xtr_base_no_sparse.json')
+config_path = os.path.join(root, 'run/preprocess/configs/xtr_base_no_emb.json')
 vocab_path = os.path.join(root, "data", "vocab")
 
 config = json.load(open(config_path, 'r'))
