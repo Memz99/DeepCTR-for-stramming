@@ -151,7 +151,7 @@ def train(cfg, model, optims, loader):
 
 def eval(cfg, model, loader):
     loss_func = F.mse_loss
-    loss_class = InteralMAE(model.dense_feature_columns,
+    loss_class = InteralMAE([*model.dense_feature_columns, *model.sparse_feature_columns],
                             l=300, r=10000000, interal_nums=50,
                             save_path=cfg['save_path'])
     logger = Logger(cfg['log_step'], "Test")
