@@ -48,7 +48,7 @@ class InteralMAE():
         points = (2 ** np.linspace(np.log2(l), np.log2(r), interal_nums)).astype(int)
         self.interals = list(zip(points[:-1], points[1:]))
 
-        # self.pv_idx = [fc.index[0] for fc in feature_columns]
+        self.item_id_idx = 0
         for fc in feature_columns:
             if fc.name == "pv": self.pv_idx = fc.index[0]
             if fc.name == "show_cnt": self.show_cnt_idx = fc.index[0]
