@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 
@@ -43,7 +44,7 @@ class Auc(object):
 
 
 class InteralMAE():
-    def __init__(self, feature_columns, l=300, r=99999999, interal_nums=100):
+    def __init__(self, feature_columns, l=300, r=99999999, interal_nums=100, save_path = ""):
         points = (2 ** np.linspace(np.log2(l), np.log2(r), interal_nums)).astype(int)
         self.interals = list(zip(points[:-1], points[1:]))
 
@@ -58,6 +59,9 @@ class InteralMAE():
         self.emp_e = {interal: 0. for interal in self.interals}
         self.y = {interal: 0. for interal in self.interals}
 
+        self.save_path = save_path
+        self.ofp = open(os.path.join(save_path, "prediction"), 'w')
+        self.ofp.write("pred\tgt\n")
 
     def update(self, inputs, pred, y):
         pv = inputs[:, self.pv_idx]
@@ -84,6 +88,9 @@ class InteralMAE():
                 y0 = self.y[interal]
                 self.y[interal] = y0 + (loss - n1 * y0) / self.n[interal]
 
+        lines = ['\t'.join(line) for line in zip(pred.round(3).astype(str), y.round(3).astype(str))]
+        self.ofp.write('\n'.join(lines))
+
     def echo(self):
         np.set_printoptions(suppress=True)
         print("PV Interal MAE * 100:")
@@ -94,7 +101,7 @@ class InteralMAE():
                 GOURND_TRUE: {self.y[interal]:>5.3}"
             print(s)
 
-    def plot(self, save_path):
+    def plot(self):
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots()
         x = [np.mean(np.log2(interal)) for interal in self.interals]
@@ -106,4 +113,4 @@ class InteralMAE():
         ax.set_ylabel("MAE * 100")
         ax.set_title("Model Prediction vs Empirical for the next day CLICK_RATE")
         ax.legend(loc='upper right')
-        fig.savefig(save_path, dpi=130)
+        fig.savefig(self.save_path + "_fig.png", dpi=130)

@@ -25,10 +25,9 @@ flags.DEFINE_string('do', 'train', "what task the esitimator gonna do. [train, e
 flags.DEFINE_string('root', "/home/hemingzhi/.jupyter/ctr", "project root")
 flags.DEFINE_string('train_path', "", "train splites")
 flags.DEFINE_string('info_path', "", "vocab load path")
-flags.DEFINE_string('checkpoint_save_path', "", "checkpoint save path")
 flags.DEFINE_string('eval_path', "", "eval splits")
 flags.DEFINE_string('checkpoint_load_path', "", "checkpoint load path")
-flags.DEFINE_string('log_path', "", "log save path")
+flags.DEFINE_string('save_path', "", "result save path")
 
 flags.DEFINE_integer('epoch', 1, "epoch")
 flags.DEFINE_integer('train_batch_size', 320, "batch size")
@@ -41,10 +40,9 @@ def parse_config():
 
     cfg['train_path'] = FLAGS.train_path
     cfg['info_path'] = FLAGS.info_path
-    cfg['checkpoint_save_path'] = FLAGS.checkpoint_save_path
     cfg['eval_path'] = FLAGS.eval_path
     cfg['checkpoint_load_path'] = FLAGS.checkpoint_load_path
-    cfg['log_path'] = FLAGS.log_path
+    cfg['save_path'] = FLAGS.save_path
 
     cfg['is_local'] = FLAGS.is_local
     # train param
@@ -149,12 +147,13 @@ def train(cfg, model, optims, loader):
             loss.backward()
             optims.step()
             logger.log_info(loss=loss.item(), size=cfg['train_batch_size'], epoch=epoch)
-    save_checkpoint(model, cfg['checkpoint_save_path'])
+    save_checkpoint(model, os.path.join(cfg['save_path'], 'checkpoint'))
 
 def eval(cfg, model, loader):
     loss_func = F.mse_loss
     loss_class = InteralMAE(model.dense_feature_columns,
-                            l=300, r=10000000, interal_nums=50)
+                            l=300, r=10000000, interal_nums=50,
+                            save_path=cfg['save_path'])
     logger = Logger(cfg['log_step'], "Test")
     for batch in loader:
         inputs, y = batch['features'].to(cfg['device']), batch['label'].squeeze().to(cfg['device'])
@@ -162,12 +161,12 @@ def eval(cfg, model, loader):
         loss_class.update(inputs.cpu().data.numpy(), y_pred.cpu().data.numpy(), y.cpu().data.numpy())
         logger.log_info(loss=loss_func(y_pred, y, reduction='mean').item(), size=320, epoch=0)
     loss_class.echo()
-    loss_class.plot(cfg['log_path'] + '_fig.png')
+    loss_class.plot()
 
 
 def main(argv):
     cfg = parse_config()
-    redirect_stdouterr_to_file(cfg['log_path'])
+    redirect_stdouterr_to_file(os.path.join(cfg['save_path'], "log"))
     sparse_feature_info, dense_feature_info, label_feature_info = get_configuration(cfg['info_path'])
 
     model, optims, \
