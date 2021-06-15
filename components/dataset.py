@@ -65,6 +65,7 @@ class RawDataset(IterableDataset):
         else:
             rank, num_workers = 0, 1
         worker_files = [self.files[i] for i in range(rank, len(self.files), num_workers)]
+        #  print(worker_files)
         self.iterator = raw_iterator(worker_files, self.encoder_items, self.ret_idxs, self.label_info)
 
     def __iter__(self):

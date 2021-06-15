@@ -2,10 +2,10 @@ set -x
 root="/home/hemingzhi/.jupyter/ctr"
 do="eval"
 
-epoch=30
-train_batch_size=4800
+epoch=1
+train_batch_size=320
 
-task="1700w_epoch1_CE"
+task="1700w_epoch1_no_sparse_CE"
 table="xtr_base"
 
 train_date="20210608_filtered"

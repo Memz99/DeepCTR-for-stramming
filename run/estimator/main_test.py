@@ -140,10 +140,11 @@ def initialize(cfg, train_info, sparse_feature_info, dense_feature_info):
 
 def train(cfg, model, optims, loader):
     loss_func = F.binary_cross_entropy
+    # loss_func = F.mse_loss
 
     logger = Logger(cfg['log_step'], "Train")
     for epoch in range(cfg['epoch']):
-        loader.dataset.dataset.reset()
+        # loader.dataset.dataset.reset()
         for batch in loader:
             inputs, y = batch['features'].to(cfg['device']), batch['label'].squeeze().to(cfg['device'])
 
