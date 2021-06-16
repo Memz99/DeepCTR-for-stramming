@@ -1,0 +1,10 @@
+{
+  "sparse_features": [],
+  "dense_features": [
+    "show_cnt",
+    "click_cnt",
+    "pv"
+  ],
+  "sparse_embedding_features": [
+  ]
+}
