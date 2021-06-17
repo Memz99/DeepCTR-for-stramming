@@ -206,7 +206,7 @@ class DeepFM(nn.Module):
         for cls in range(self.class_num):
             _logit = self.private_dnn[cls](shared_feat)
             logit.append(_logit)
-        logit = torch.cat(logit, dim=-1)
+        logit = torch.cat(logit, dim=-1).to(self.device)
 
         logit += self.linear(inputs)
         # if len(sparse_embedding_list) > 0:  # 现在multi-task没考虑fm，要改的话应该有多少个task就建多少组fm
