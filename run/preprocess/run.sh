@@ -1,6 +1,6 @@
 root="/home/hemingzhi/.jupyter/ctr"
 table="xtr_v1"
-date="20210608"
+date="20210609"
 
 frag_size=200000
 data_file="${root}/data/${table}/${date}"

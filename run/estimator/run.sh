@@ -1,6 +1,6 @@
 set -x
 root="/home/hemingzhi/.jupyter/ctr"
-do="train"
+do="eval"
 
 task="multitask_epoch1_MSE"
 table="xtr_v1"
@@ -11,11 +11,11 @@ train_batch_size=320
 train_date="20210608"
 train_path="${root}/data/${table}/${train_date}_train_splits"
 data_info_path="${root}/data/vocab/${table}_${train_date}.pkl"
-train_info_path="${root}/run/estimator/configs/xtr_base_only2.json"
+train_info_path="${root}/run/estimator/configs/xtr_v1_no_sparse.json"
 
-eval_date="20210609_filtered"
+eval_date="20210609"
 eval_path="${root}/data/${table}/${eval_date}_eval_splits"
-checkpoint_load_path="${root}/result/xtr_base/${train_date}/${task}_train/checkpoint"
+checkpoint_load_path="${root}/result/${table}/${train_date}/${task}_train/checkpoint"
 
 if [ "$do" = "train" ]
 then
