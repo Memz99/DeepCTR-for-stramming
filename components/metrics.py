@@ -119,7 +119,7 @@ class InteralMAE():
         np.set_printoptions(suppress=True)
         print("PV Interal MAE * 100:")
         for interal in self.interals:
-            s = '\t'.join([e.log(interal) for e in self.e])
+            s = '\t'.join([f"N: {self.n[interal]:>10}"] + [e.log(interal) for e in self.e])
             print(s)
 
     def plot(self):

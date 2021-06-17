@@ -55,22 +55,18 @@ def ctlvtr_iterator(files, encoder_items, ret_idxs, label_info):
             line = f.readline()
             if not line:
                 break
-            # try:
-            row = np.array(line.strip().split('\t'))
-            for idxs, vocab in encoder_items:
-                row[idxs] = [vocab[row[i]] if row[i] in vocab else vocab["__OOV__"]
-                             for i in idxs]
-            feat = row[ret_idxs]
-            # click = float(row[click_idx])
-            # show = float(row[show_idx])
-            # play = float(row[play_idx])
-            # lv = float(row[lv_idx])
-            click, show, play, lv = row[[click_idx, show_idx, play_idx, lv_idx]].astype(float)
-            label = [click_rate(click, show), lv_rate(play, show, lv)]
-            yield feat.astype("float32"), np.array(label).astype("float32")
-            # except:
-            #     print("error line:", line)
-            #     continue
+            try:
+                row = np.array(line.strip().split('\t'))
+                for idxs, vocab in encoder_items:
+                    row[idxs] = [vocab[row[i]] if row[i] in vocab else vocab["__OOV__"]
+                                 for i in idxs]
+                feat = row[ret_idxs]
+                click, show, play, lv = row[[click_idx, show_idx, play_idx, lv_idx]].astype(float)
+                label = [click_rate(click, show), lv_rate(play, show, lv)]
+                yield feat.astype("float32"), np.array(label).astype("float32")
+            except:
+                print("error line:", line)
+                continue
 
 
 class RawDataset(IterableDataset):

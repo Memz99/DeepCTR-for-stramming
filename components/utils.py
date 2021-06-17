@@ -97,7 +97,7 @@ class Optimizers(object):
 
     def add(self, optim):
         self.optims.append(optim)
-        self.schedulers.append(torch.optim.lr_scheduler.StepLR(optim, self.step_size, gamma=0.1))
+        self.schedulers.append(torch.optim.lr_scheduler.StepLR(optim, self.step_size, gamma=0.2))
 
     def zero_grad(self):
         for optim in self.optims:
