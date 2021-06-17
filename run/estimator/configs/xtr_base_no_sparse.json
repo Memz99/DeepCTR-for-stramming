@@ -23,6 +23,10 @@
     "qp_doc_omit_score",
     "qp_doc_mixture_omit"
   ],
+  "label_features": [
+    "now_show_cnt",
+    "now_click_cnt"
+  ],
   "sparse_embedding_features": [
   ]
 }

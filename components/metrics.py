@@ -2,6 +2,8 @@ import os
 import numpy as np
 import pandas as pd
 
+from collections import defaultdict
+
 
 class Auc(object):
     def __init__(self, num_buckets):
@@ -42,81 +44,97 @@ class Auc(object):
             return -0.5  # 样本全正例，或全负例
         return area / (tn * tp)
 
+class InteralLoss():
+    def __init__(self, interals, name, scale=1):
+        self.e = {interal: 0. for interal in interals}
+        self.name = name
+        self.scale = scale
+
+    def update(self, interal, pred, gt, n1, n):
+        loss = sum(abs(pred - gt)) * self.scale
+        e0 = self.e[interal]
+        self.e[interal] = e0 + (loss - n1 * e0) / n
+
+    def log(self, interal):
+        return f"{self.name}: {round(self.e[interal], 3):>5.4}"
 
 class InteralMAE():
     def __init__(self, feature_columns, l=300, r=99999999, interal_nums=100, save_path = ""):
         points = (2 ** np.linspace(np.log2(l), np.log2(r), interal_nums)).astype(int)
         self.interals = list(zip(points[:-1], points[1:]))
 
-        self.item_id_idx = 0
+        self.vidx = defaultdict(int)
         for fc in feature_columns:
-            if fc.name == "pv": self.pv_idx = fc.index[0]
-            if fc.name == "show_cnt": self.show_cnt_idx = fc.index[0]
-            if fc.name == "click_cnt": self.click_cnt_idx = fc.index[0]
-            if fc.name == "item_id": self.item_id_idx = fc.index[0]
+            if fc.name == "pv": self.vidx['pv'] = fc.index[0]
+            if fc.name == "show_cnt_30d": self.vidx['show_cnt'] = fc.index[0]
+            if fc.name == "click_cnt_30d": self.vidx['click_cnt'] = fc.index[0]
+            if fc.name == "long_view_cnt_30d": self.vidx['long_view_cnt'] = fc.index[0]
+            if fc.name == "play_cnt_30d": self.vidx['play_cnt'] = fc.index[0]
 
         self.n = {interal: 0. for interal in self.interals}
-        self.e = {interal: 0. for interal in self.interals}
-        self.emp_e = {interal: 0. for interal in self.interals}
-        self.y = {interal: 0. for interal in self.interals}
+
+        np.seterr(divide='ignore', invalid='ignore')
+        self.e = [
+            InteralLoss(self.interals, "MODEL_CTR_E", scale=1),
+            InteralLoss(self.interals, "EMP_CTR_E", scale=1),
+            InteralLoss(self.interals, "GT_CTR", scale=1),
+            InteralLoss(self.interals, "MODEL_LVTR_E", scale=1),
+            InteralLoss(self.interals, "EMP_LVTR_E", scale=1),
+            InteralLoss(self.interals, "GT_LVTR", scale=1)
+            ]
 
         self.save_path = save_path
         self.ofp = open(os.path.join(save_path, "prediction"), 'w')
         self.ofp.write("item_id\tpv\tpred\temp\tgt\n")
 
     def update(self, inputs, pred, y):
-        pv = inputs[:, self.pv_idx]
-        shows = inputs[:, self.show_cnt_idx]
-        clicks = inputs[:, self.click_cnt_idx]
-        emp_pred = np.where(shows > 0, clicks / shows, 0)
-        emp_pred = np.where(emp_pred > 1, 1, emp_pred)
+        v = {key: inputs[:, idx] for key, idx in self.vidx.items()}
+        emp = np.stack([v['click_cnt'] / v['show_cnt'], v['long_view_cnt'] / v['play_cnt']], axis=1)
+        emp[emp == np.inf] = 0
         for interal in self.interals:
             l, r = interal
-            lind = np.logical_and(pv >= l, pv < r)
+            lind = np.logical_and(v['pv'] >= l, v['pv'] < r)
             n1 = sum(lind)
             if n1 > 0:
                 self.n[interal] += n1
+                _pred, _emp, _gt = pred[lind], emp[lind], y[lind]
+                for e in self.e:
+                    if e.name == 'MODEL_CTR_E':  e.update(interal, _pred[:, 0]   , _gt[:, 0], n1, self.n[interal])
+                    if e.name == 'EMP_CTR_E':    e.update(interal,  _emp[:, 0]   , _gt[:, 0], n1, self.n[interal])
+                    if e.name == 'GT_CTR':       e.update(interal,   _gt[:, 0]   ,         0, n1, self.n[interal])
+                    if e.name == 'MODEL_LVTR_E': e.update(interal, _pred[:, 1]   , _gt[:, 1], n1, self.n[interal])
+                    if e.name == 'EMP_LVTR_E':   e.update(interal,  _emp[:, 1]   , _gt[:, 1], n1, self.n[interal])
+                    if e.name == 'GT_LVTR':      e.update(interal,   _gt[:, 1]   ,         0, n1, self.n[interal])
 
-                loss = sum(abs(pred[lind] - y[lind])) * 100
-                e0 = self.e[interal]
-                self.e[interal] = e0 + (loss - n1 * e0) / self.n[interal]
-
-                loss = sum(abs(emp_pred[lind] - y[lind])) * 100
-                e0 = self.emp_e[interal]
-                self.emp_e[interal] = e0 + (loss - n1 * e0) / self.n[interal]
-
-                loss = sum(y[lind])
-                y0 = self.y[interal]
-                self.y[interal] = y0 + (loss - n1 * y0) / self.n[interal]
-
-        item_id = inputs[:, self.item_id_idx]
-        lines = ['\t'.join(line) for line in zip(item_id.astype(str),
-                                                 pv.astype(str),
-                                                 pred.round(3).astype(str),
-                                                 emp_pred.round(3).astype(str),
-                                                 y.round(3).astype(str))]
+        lines = ['\t'.join(line) for line in zip(v['pv'].astype(str),
+                                                 pred[:, 0].round(3).astype(str),
+                                                 emp[:, 0].round(3).astype(str),
+                                                 y[:, 0].round(3).astype(str),
+                                                 pred[:, 1].round(3).astype(str),
+                                                 emp[:, 1].round(3).astype(str),
+                                                 y[:, 1].round(3).astype(str))]
         self.ofp.write('\n'.join(lines))
 
     def echo(self):
         np.set_printoptions(suppress=True)
         print("PV Interal MAE * 100:")
         for interal in self.interals:
-            s = f"{str(interal):>20}\tN: {self.n[interal]:>10}\t\
-                MODEL_MAE: {self.e[interal]:>10.7}\t\
-                EMPIRICAL_MAE: {self.emp_e[interal]:>10.7}\
-                GOURND_TRUE: {self.y[interal]:>5.3}"
+            s = '\t'.join([e.log(interal) for e in self.e])
             print(s)
 
     def plot(self):
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots()
         x = [np.mean(np.log2(interal)) for interal in self.interals]
-        emp_e = [self.emp_e[interal] for interal in self.interals]
-        model_e = [self.e[interal] for interal in self.interals]
-        ax.plot(x, emp_e, label='emp_e')
-        ax.plot(x, model_e, label='model_e')
+        v = {e.name: [e.e[interal]
+             for interal in self.interals]
+             for e in self.e}
+        ax.plot(x, v['EMP_CTR_E'], c='b', ls='--', lw=0.8, label='EMP_CTR_E')
+        ax.plot(x, v['MODEL_CTR_E'], c='b', ls='-', lw=0.8, label='MODEL_CTR_E')
+        ax.plot(x, v['EMP_LVTR_E'], c='g', ls='--', lw=0.8, label='EMP_LVTR_E')
+        ax.plot(x, v['MODEL_LVTR_E'], c='g', ls='-', lw=0.8, label='MODEL_LVTR_E')
         ax.set_xlabel("log2(pv) , 30d")
         ax.set_ylabel("MAE * 100")
-        ax.set_title("Model Prediction vs Empirical for the next day CLICK_RATE")
-        ax.legend(loc='upper right')
+        ax.set_title("Model Prediction vs Empirical")
+        ax.legend(loc='upper left')
         fig.savefig(os.path.join(self.save_path, "fig.png"), dpi=130)

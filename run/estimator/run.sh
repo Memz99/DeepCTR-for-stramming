@@ -2,13 +2,13 @@ set -x
 root="/home/hemingzhi/.jupyter/ctr"
 do="train"
 
+task="multitask_epoch1_MSE"
+table="xtr_v1"
+
 epoch=1
 train_batch_size=320
 
-task="1700w_epoch1_only2_lrdecrease_CE"
-table="xtr_base"
-
-train_date="20210608_filtered"
+train_date="20210608"
 train_path="${root}/data/${table}/${train_date}_train_splits"
 data_info_path="${root}/data/vocab/${table}_${train_date}.pkl"
 train_info_path="${root}/run/estimator/configs/xtr_base_only2.json"

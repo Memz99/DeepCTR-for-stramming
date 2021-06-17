@@ -67,7 +67,10 @@ class DNN(nn.Module):
 
 
 class Linear(nn.Module):
-    def __init__(self, sparse_feature_columns, dense_feature_columns,
+    def __init__(self,
+                 sparse_feature_columns,
+                 dense_feature_columns,
+                 class_num=1,
                  init_std=0.0001, device='cpu'):
         super(Linear, self).__init__()
         self.sparse_feature_columns = sparse_feature_columns
@@ -79,9 +82,14 @@ class Linear(nn.Module):
             nn.init.normal_(tensor.weight, mean=0, std=init_std)
 
         if len(self.dense_feature_columns) > 0:
-            self.weight = nn.Parameter(torch.Tensor(sum(fc.dimension for fc in self.dense_feature_columns), 1).to(
-                device))
+            self.weight = nn.Parameter(
+                                torch.Tensor(
+                                    sum(fc.dimension for fc in self.dense_feature_columns),
+                                    class_num
+                                ).to(device))
             torch.nn.init.normal_(self.weight, mean=0, std=init_std)
+
+        self.bias = nn.Parameter(torch.zeros((class_num,)))
 
     def forward(self, inputs):
 
@@ -109,7 +117,7 @@ class Linear(nn.Module):
             dense_value_logit = torch.cat(
                 dense_value_list, dim=-1).matmul(self.weight)
             linear_logit += dense_value_logit
-
+        linear_logit += self.bias
         return linear_logit
 
 
@@ -130,11 +138,20 @@ class FM(nn.Module):
 
 
 class DeepFM(nn.Module):
-    def __init__(self, sparse_feature_columns, dense_feature_columns,
-                 dnn_hidden_units=(256, 128, 1), dnn_activation='relu', dnn_dropout=0,
-                 init_std=0.0001, seed=1173, device='cpu'):
+    def __init__(self,
+                 sparse_feature_columns,
+                 dense_feature_columns,
+                 dnn_hidden_units=(256, 128, 64),
+                 dnn_shared_layers=1,
+                 dnn_activation='relu',
+                 dnn_dropout=0,
+                 class_num=1,
+                 init_std=0.0001,
+                 seed=1173,
+                 device='cpu'):
         super(DeepFM, self).__init__()
         torch.manual_seed(seed)
+        self.class_num = class_num
         self.sparse_feature_columns = sparse_feature_columns
         self.dense_feature_columns = dense_feature_columns
 
@@ -143,15 +160,22 @@ class DeepFM(nn.Module):
 
         # DNN
         dnn_input_dim = sum(feat.dimension for feat in sparse_feature_columns + dense_feature_columns)
-        self.dnn = DNN(dnn_input_dim, dnn_hidden_units,
+        self.shared_dnn = DNN(dnn_input_dim, dnn_hidden_units[:dnn_shared_layers],
                activation=dnn_activation, dropout_rate=dnn_dropout)
+
+        dnn_hidden_units += tuple([1])
+        self.private_dnn = []
+        for cls in range(class_num):
+            self.private_dnn.append(
+                DNN(dnn_hidden_units[dnn_shared_layers-1], dnn_hidden_units[dnn_shared_layers:],
+                    activation=dnn_activation, dropout_rate=dnn_dropout)
+            )
 
         # FM
         self.linear = Linear(sparse_feature_columns, dense_feature_columns)
         self.fm = FM()
 
         # Output
-        self.bias = nn.Parameter(torch.zeros((1,)))
         self.to(device)
 
     def split_tensor(self, inputs):
@@ -168,12 +192,6 @@ class DeepFM(nn.Module):
 
     def forward(self, inputs):
         sparse_embedding_list, dense_value_list = self.split_tensor(inputs)
-        logit = self.linear(inputs)
-
-        if len(sparse_embedding_list) > 0:
-            fm_input = torch.cat(sparse_embedding_list, dim=1)
-            logit += self.fm(fm_input)
-
         dense_dnn_input = torch.flatten(
             torch.cat(dense_value_list, dim=-1), start_dim=1)
         if sparse_embedding_list:
@@ -182,8 +200,18 @@ class DeepFM(nn.Module):
             dnn_input = torch.cat((sparse_dnn_input, dense_dnn_input), dim=-1)
         else:
             dnn_input = dense_dnn_input
-        dnn_logit = self.dnn(dnn_input)
-        logit += dnn_logit
 
-        y_pred = torch.sigmoid(logit + self.bias)
+        shared_feat = self.shared_dnn(dnn_input)
+        logit = []
+        for cls in range(self.class_num):
+            _logit = self.private_dnn[cls](shared_feat)
+            logit.append(_logit)
+        logit = torch.cat(logit, dim=-1)
+
+        logit += self.linear(inputs)
+        # if len(sparse_embedding_list) > 0:  # 现在multi-task没考虑fm，要改的话应该有多少个task就建多少组fm
+        #     fm_input = torch.cat(sparse_embedding_list, dim=1)
+        #     logit += self.fm(fm_input)
+
+        y_pred = torch.sigmoid(logit)
         return y_pred

@@ -6,28 +6,34 @@ import numpy as np
 import pandas as pd
 
 from tqdm import tqdm
+from absl import flags, app
 
-# root = "/Users/hemingzhi/Documents/Projects/ctr"
-root = "/home/hemingzhi/.jupyter/ctr"
+FLAGS = flags.FLAGS
+flags.DEFINE_string('root', "/home/hemingzhi/.jupyter/ctr", "project root")
+flags.DEFINE_string('data_file', "", "data file path")
+flags.DEFINE_string('data_config', "", "data config")
+flags.DEFINE_string('vocab_save_path', "", "vocab save path")
+flags.DEFINE_integer('frag_size', 20000, "file frag size")
+
+root = "/Users/hemingzhi/Documents/Projects/ctr" # root = "/home/hemingzhi/.jupyter/ctr"
 table = "xtr_base"
 date = "20210608_filtered"
-frag_size = 200000
 
 config_path = os.path.join(root, 'run/preprocess/configs/xtr_base_no_emb.json')
 vocab_path = os.path.join(root, "data", "vocab")
 
-config = json.load(open(config_path, 'r'))
-sparse_features = config['sparse_features']
-dense_features = config['dense_features']
-label_features = config['label_features']
-sparse_embedding_features = config['sparse_embedding_features']
-
-def get_info(data_file):
-    with open(data_file, 'r', encoding='utf-8') as f:
-        head = f.readline()
-    head = [feat.strip() for feat in head.split('\t')]
-    feat2idx = {feat: (i, i+1) for i, feat in enumerate(head)}
-    return head, feat2idx
+def parse_config():
+    config = json.load(open(FLAGS.data_config, 'r'))
+    cfg = {
+        "data_file": FLAGS.data_file,
+        "sparse_features": config['sparse_features'],
+        "dense_features": config['dense_features'],
+        "label_features": config['label_features'],
+        "sparse_embedding_features": config['sparse_embedding_features'],
+        "frag_size": FLAGS.frag_size,
+        "vocab_save_path": FLAGS.vocab_save_path
+    }
+    return cfg
 
 def read_and_fill(data_file, sparse_features=None, usecols=None):
     print("reading csv...")
@@ -42,7 +48,7 @@ def read_and_fill(data_file, sparse_features=None, usecols=None):
     print("reading done!")
     return data
 
-def split_dataset(data_file):
+def split_dataset(data_file, frag_size, sparse_features, dense_features, label_features):
     print("spliting...")
     from sklearn.model_selection import train_test_split
 
@@ -51,33 +57,18 @@ def split_dataset(data_file):
                   usecols=sparse_features+dense_features+label_features)
     data, eval = train_test_split(data, train_size=0.9)
     data.to_csv(data_file+"_train", index=False, sep='\t')
-    split_files(data, data_file + "_train")
-    split_files(eval, data_file + "_eval")
+    split_files(data, data_file + "_train", frag_size)
+    split_files(eval, data_file + "_eval", frag_size)
     eval = None
     data, val = train_test_split(data, train_size=0.95)
     print("spliting done!")
     return data  # return 95% of train set to do encoding
 
 
-def split_files(df, data_file):
+def split_files(df, data_file, frag_size):
     print("deviding...")
     os.makedirs(data_file + "_splits", exist_ok=True)
-    # f = open(data_file, "r", encoding='utf-8')
-    # f.readline() # column name
-    # i = 0
-    # end = False
-    # while not end:
-    #     fi = open(f"{data_file}_splits/{date}_{i}", 'w', encoding='utf-8')
-    #     for _ in range(frag_size):
-    #         row = f.readline()
-    #         if row != "":
-    #             fi.write(row)
-    #         else:
-    #             end = True
-    #             break
-    #     fi.close()
-    #     i += 1
-    # f.close()
+
     v = df.values
     i = 0
     cnt = 0
@@ -95,7 +86,12 @@ def split_files(df, data_file):
     print("done!")
 
 
-def encode_and_save(data):
+def encode_and_save(data,
+                    sparse_features,
+                    dense_features,
+                    label_features,
+                    sparse_embedding_features,
+                    vocab_save_path):
     print("encoding...")
     import pickle
     from sklearn.preprocessing import OrdinalEncoder, LabelEncoder, MinMaxScaler
@@ -121,7 +117,7 @@ def encode_and_save(data):
     for fname in label_features:
         label_feature_info[fname] = {'index': feat2idx[fname]}
     
-    output = open(f'{vocab_path}/{table}_{date}.pkl', 'wb')
+    output = open(vocab_save_path, 'wb')
     pickle.dump(sparse_feature_info, output, -1)
     pickle.dump(dense_feature_info, output, -1)
     pickle.dump(label_feature_info, output, -1)
@@ -130,14 +126,24 @@ def encode_and_save(data):
     print("encoding done!")
 
 
-if __name__ == '__main__':
+def main(argv):
     import time
     start = time.time()
-    data_file = os.path.join(root, "data", table, date)
+    cfg = parse_config()
     
-    head, feat2idx = get_info(data_file)
-    
-    train = split_dataset(data_file)
+    train = split_dataset(cfg['data_file'],
+                          cfg['frag_size'],
+                          cfg['sparse_features'],
+                          cfg['dense_features'],
+                          cfg['label_features'])
 
-    encode_and_save(train)
+    encode_and_save(train,
+                    cfg['sparse_features'],
+                    cfg['dense_features'],
+                    cfg['label_features'],
+                    cfg['sparse_embedding_features'],
+                    cfg['vocab_save_path'])
     print("cost:", time.time() - start)
+
+if __name__ == '__main__':
+    app.run(main)
