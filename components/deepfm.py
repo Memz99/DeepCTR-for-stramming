@@ -164,12 +164,11 @@ class DeepFM(nn.Module):
                activation=dnn_activation, dropout_rate=dnn_dropout)
 
         dnn_hidden_units += tuple([1])
-        self.private_dnn = []
-        for cls in range(class_num):
-            self.private_dnn.append(
+        self.private_dnn = nn.ModuleList([
                 DNN(dnn_hidden_units[dnn_shared_layers-1], dnn_hidden_units[dnn_shared_layers:],
                     activation=dnn_activation, dropout_rate=dnn_dropout)
-            )
+                for _ in range(class_num)
+        ])
 
         # FM
         self.linear = Linear(sparse_feature_columns, dense_feature_columns)
@@ -206,7 +205,7 @@ class DeepFM(nn.Module):
         for cls in range(self.class_num):
             _logit = self.private_dnn[cls](shared_feat)
             logit.append(_logit)
-        logit = torch.cat(logit, dim=-1).to(self.device)
+        logit = torch.cat(logit, dim=-1)
 
         logit += self.linear(inputs)
         # if len(sparse_embedding_list) > 0:  # 现在multi-task没考虑fm，要改的话应该有多少个task就建多少组fm
