@@ -93,7 +93,7 @@ class InteralMAE():
         emp[emp == np.inf] = 0
         for interal in self.interals:
             l, r = interal
-            lind = np.logical_and(v['pv'] >= l, v['pv'] < r)
+            lind = np.logical_and(v['show_cnt_30d'] >= l, v['show_cnt_30d'] < r)
             n1 = sum(lind)
             if n1 > 0:
                 self.n[interal] += n1
@@ -117,9 +117,9 @@ class InteralMAE():
 
     def echo(self):
         np.set_printoptions(suppress=True)
-        print("PV Interal MAE * 100:")
+        print("PV Interal MAE:")
         for interal in self.interals:
-            s = '\t'.join([f"N: {self.n[interal]:>10}"] + [e.log(interal) for e in self.e])
+            s = '\t'.join([f"INTERAL: {str(interal):>15}\tN: {self.n[interal]:>10}"] + [e.log(interal) for e in self.e])
             print(s)
 
     def plot(self):
