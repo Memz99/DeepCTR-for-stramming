@@ -85,7 +85,8 @@ class InteralMAE():
 
         self.save_path = save_path
         self.ofp = open(os.path.join(save_path, "prediction"), 'w')
-        self.ofp.write("\t".join(["pv", "show_cnt"] + [e.name.split('_')[:-1] for e in self.e]) + "\n")
+        self.ofp.write("\t".join(
+            ["pv", "show_cnt", "model_ctr", "emp_ctr", "gt_ctr", "model_lvtr", "emp_lvtr", "gt_lvtr"]) + "\n")
 
     def update(self, inputs, pred, y):
         v = {key: inputs[:, idx] for key, idx in self.vidx.items()}
