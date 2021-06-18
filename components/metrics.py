@@ -60,7 +60,7 @@ class InteralLoss():
 
 class InteralMAE():
     def __init__(self, feature_columns, l=300, r=99999999, interal_nums=100, save_path = ""):
-        points = (2 ** np.linspace(np.log2(l), np.log2(r), interal_nums)).astype(int)
+        points = np.unique((2 ** np.linspace(np.log2(1+l), np.log2(1+r), interal_nums) - 1).astype(int))
         self.interals = list(zip(points[:-1], points[1:]))
 
         self.vidx = defaultdict(int)
@@ -93,7 +93,7 @@ class InteralMAE():
         emp[emp == np.inf] = 0
         for interal in self.interals:
             l, r = interal
-            lind = np.logical_and(v['show_cnt_30d'] >= l, v['show_cnt_30d'] < r)
+            lind = np.logical_and(v['show_cnt'] >= l, v['show_cnt'] < r)
             n1 = sum(lind)
             if n1 > 0:
                 self.n[interal] += n1
@@ -117,7 +117,7 @@ class InteralMAE():
 
     def echo(self):
         np.set_printoptions(suppress=True)
-        print("PV Interal MAE:")
+        print("SHOW_CNT Interal MAE:")
         for interal in self.interals:
             s = '\t'.join([f"INTERAL: {str(interal):>15}\tN: {self.n[interal]:>10}"] + [e.log(interal) for e in self.e])
             print(s)
