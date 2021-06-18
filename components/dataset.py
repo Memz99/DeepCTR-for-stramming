@@ -39,7 +39,7 @@ def lv_rate(play, show, lv):
     if play + show <= 0:
         raise
     if play > 0:
-        label = lv / play
+        label = lv / play if play > lv else 1
     else:
         label = 0
     return label

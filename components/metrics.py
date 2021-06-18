@@ -85,7 +85,7 @@ class InteralMAE():
 
         self.save_path = save_path
         self.ofp = open(os.path.join(save_path, "prediction"), 'w')
-        self.ofp.write("\t".join(["pv"] + [e.name for e in self.e]) + "\n")
+        self.ofp.write("\t".join(["pv", "show_cnt"] + [e.name.split('_')[:-1] for e in self.e]) + "\n")
 
     def update(self, inputs, pred, y):
         v = {key: inputs[:, idx] for key, idx in self.vidx.items()}
@@ -99,14 +99,15 @@ class InteralMAE():
                 self.n[interal] += n1
                 _pred, _emp, _gt = pred[lind], emp[lind], y[lind]
                 for e in self.e:
-                    if e.name == 'MODEL_CTR_E':  e.update(interal, _pred[:, 0]   , _gt[:, 0], n1, self.n[interal])
-                    if e.name == 'EMP_CTR_E':    e.update(interal,  _emp[:, 0]   , _gt[:, 0], n1, self.n[interal])
-                    if e.name == 'GT_CTR':       e.update(interal,   _gt[:, 0]   ,         0, n1, self.n[interal])
-                    if e.name == 'MODEL_LVTR_E': e.update(interal, _pred[:, 1]   , _gt[:, 1], n1, self.n[interal])
-                    if e.name == 'EMP_LVTR_E':   e.update(interal,  _emp[:, 1]   , _gt[:, 1], n1, self.n[interal])
-                    if e.name == 'GT_LVTR':      e.update(interal,   _gt[:, 1]   ,         0, n1, self.n[interal])
+                    if e.name == 'MODEL_CTR_E':  e.update(interal, _pred[:, 0], _gt[:, 0], n1, self.n[interal])
+                    if e.name == 'EMP_CTR_E':    e.update(interal,  _emp[:, 0], _gt[:, 0], n1, self.n[interal])
+                    if e.name == 'GT_CTR':       e.update(interal,   _gt[:, 0],         0, n1, self.n[interal])
+                    if e.name == 'MODEL_LVTR_E': e.update(interal, _pred[:, 1], _gt[:, 1], n1, self.n[interal])
+                    if e.name == 'EMP_LVTR_E':   e.update(interal,  _emp[:, 1], _gt[:, 1], n1, self.n[interal])
+                    if e.name == 'GT_LVTR':      e.update(interal,   _gt[:, 1],         0, n1, self.n[interal])
 
         lines = ['\t'.join(line) for line in zip(v['pv'].astype(str),
+                                                 v['show_cnt'].astype(str),
                                                  pred[:, 0].round(3).astype(str),
                                                  emp[:, 0].round(3).astype(str),
                                                  y[:, 0].round(3).astype(str),
