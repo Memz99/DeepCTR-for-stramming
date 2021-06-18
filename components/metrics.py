@@ -133,7 +133,7 @@ class InteralMAE():
         ax.plot(x, v['MODEL_CTR_E'], c='b', ls='-', lw=0.8, label='MODEL_CTR_E')
         ax.plot(x, v['EMP_LVTR_E'], c='g', ls='--', lw=0.8, label='EMP_LVTR_E')
         ax.plot(x, v['MODEL_LVTR_E'], c='g', ls='-', lw=0.8, label='MODEL_LVTR_E')
-        ax.set_xlabel("log2(pv) , 30d")
+        ax.set_xlabel("log2(1+show_cnt) , 30d")
         ax.set_ylabel("MAE * 100")
         ax.set_title("Model Prediction vs Empirical")
         ax.legend(loc='upper left')
