@@ -60,10 +60,11 @@ def ctlvtr_iterator(files, encoder_items, ret_idxs, label_info):
                 for idxs, vocab in encoder_items:
                     row[idxs] = [vocab[row[i]] if row[i] in vocab else vocab["__OOV__"]
                                  for i in idxs]
-                feat = row[ret_idxs]
-                click, show, play, lv = row[[click_idx, show_idx, play_idx, lv_idx]].astype(float)
-                label = [click_rate(click, show), lv_rate(play, show, lv)]
-                yield feat.astype("float32"), np.array(label).astype("float32")
+                feat = row[ret_idxs].astype("float32")
+                #  if feat[0] <= 2: continue
+                click, show, play, lv = row[[click_idx, show_idx, play_idx, lv_idx]].astype("float32")
+                label = np.array([click_rate(click, show), lv_rate(play, show, lv)]).astype("float32")
+                yield feat, label
             except:
                 print("error line:", line)
                 continue

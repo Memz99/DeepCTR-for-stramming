@@ -2,7 +2,7 @@ set -x
 root="/home/hemingzhi/.jupyter/ctr"
 do="eval"
 
-task="multitask_epoch1_MSE"
+task="multitask_epoch1_filter_showcnt_MSE"
 table="xtr_v1"
 
 epoch=1
