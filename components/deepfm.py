@@ -49,7 +49,8 @@ class DNN(nn.Module):
 
         self.linears = nn.ModuleList(
             [nn.Linear(hidden_units[i], hidden_units[i + 1]) for i in range(len(hidden_units) - 1)])
-
+        self.bns = nn.ModuleList(
+            [nn.BatchNorm1d(hidden_units[i]) for i in range(1, len(hidden_units))])
         self.activation_layers = nn.ModuleList(
             [activation_layer(activation) for i in range(len(hidden_units) - 1)])
 
@@ -61,6 +62,7 @@ class DNN(nn.Module):
         x = inputs
         for i in range(len(self.linears)):
             x = self.linears[i](x)
+            x = self.bns[i](x)
             x = self.activation_layers[i](x)
             x = self.dropout(x)
         return x
@@ -158,9 +160,10 @@ class DeepFM(nn.Module):
         self.embedding_dict = create_embedding_matrix(sparse_feature_columns)
         # 正则项...
 
+        input_dim = sum(feat.dimension for feat in sparse_feature_columns + dense_feature_columns)
+        self.bn = torch.nn.BatchNorm1d(input_dim)
         # DNN
-        dnn_input_dim = sum(feat.dimension for feat in sparse_feature_columns + dense_feature_columns)
-        self.shared_dnn = DNN(dnn_input_dim, dnn_hidden_units[:dnn_shared_layers],
+        self.shared_dnn = DNN(input_dim, dnn_hidden_units[:dnn_shared_layers],
                activation=dnn_activation, dropout_rate=dnn_dropout)
 
         dnn_hidden_units += tuple([1])
@@ -190,6 +193,7 @@ class DeepFM(nn.Module):
         return sparse_embedding_list, dense_value_list
 
     def forward(self, inputs):
+        inputs = self.bn(inputs)
         sparse_embedding_list, dense_value_list = self.split_tensor(inputs)
         dense_dnn_input = torch.flatten(
             torch.cat(dense_value_list, dim=-1), start_dim=1)

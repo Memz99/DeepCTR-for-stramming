@@ -1,6 +1,6 @@
 set -x
 root="/Users/hemingzhi/Documents/Projects/ctr"
-do="eval"
+do="train"
 task="multitask_epoch1_MSE"
 table="xtr_v1"
 
