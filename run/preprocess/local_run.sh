@@ -1,8 +1,8 @@
 root="/Users/hemingzhi/Documents/Projects/ctr"
-table="xtr_v1"
+table="test"
 date="20210608"
 
-frag_size=20000
+frag_size=2000
 data_file="${root}/data/${table}/${date}"
 data_config="${root}/run/preprocess/configs/xtr_v1_no_sparse.json"
 vocab_save_path="${root}/data/vocab/${table}_${date}.pkl"
