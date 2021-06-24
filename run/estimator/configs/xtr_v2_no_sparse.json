@@ -1,8 +1,5 @@
 {
-  "sparse_features": [
-    "keyword",
-    "item_id"
-  ],
+  "sparse_features": {},
   "dense_features": [
     "show_cnt_30d",
     "show_cnt_7d",

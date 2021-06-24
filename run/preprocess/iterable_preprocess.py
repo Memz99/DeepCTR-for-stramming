@@ -243,7 +243,6 @@ def split_dataset(cfg, feat2idx, lens):
 
     f = open(cfg['data_file'], 'r', encoding='utf-8')
     columns = f.readline().rstrip('\n').split('\t')
-    origin_column_idx = {col: i for i, col in enumerate(columns)}
 
     do_split(cfg['data_file'], int(lens*split_cfg['train_dataset_size']), "train")
     do_split(cfg['data_file'], int(lens*split_cfg['eval_dataset_size']), "eval")
@@ -257,19 +256,19 @@ def main(argv):
     print("counting lines...")
     lens = count_lines(cfg['data_file'])
     print(f"there are {lens} lines")
-    print(f"done, cost:{time.time() - start}")
+    print(f"done, cost {time.time() - start:.2f} s")
     if cfg['is_encode']:
         start = time.time()
         print("encoding...")
         encode_and_save(cfg, feat2idx, lens)
-        print(f"done, cost:{(time.time() - start) / 60} min")
+        print(f"done, cost {(time.time() - start) / 60:.2f} min")
     if cfg['is_config']:
         save_configs(cfg, feat2idx)
     if cfg['is_split']:
         start = time.time()
         print("spliting...")
         split_dataset(cfg, feat2idx, lens)
-        print(f"done, cost:{(time.time() - start) / 60} min")
+        print(f"done, cost {(time.time() - start) / 60:.2f} min")
 
 
 if __name__ == "__main__":
