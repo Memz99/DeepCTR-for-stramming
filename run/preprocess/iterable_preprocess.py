@@ -122,7 +122,7 @@ class VocabContainer(object):
 
 def get_feat2idx(cfg):
     dense_info = cfg['feat_info']['dense']
-    with open(cfg['data_file'], 'r') as f:
+    with open(cfg['data_file'], 'r', encoding='utf-8') as f:
         columns = f.readline().rstrip('\n').split('\t')
         row = f.readline().split('\t')
 
@@ -140,7 +140,7 @@ def get_feat2idx(cfg):
 def encode_and_save(cfg, feat2idx, lens):
     # statistics frequency
     from collections import defaultdict
-    f = open(cfg['data_file'], 'r')
+    f = open(cfg['data_file'], 'r', encoding='utf-8')
     sparse2idx = {feat: feat2idx[feat][0] for feat in cfg['feat_info']['sparse']}
     feat2count = {feat: defaultdict(int) for feat in cfg['feat_info']['sparse']}
     count, limit = 0, int(lens*cfg['encode']['vocab_dataset_size'])
@@ -226,7 +226,7 @@ def split_dataset(cfg, feat2idx, lens):
             if count % frag_size == 0:
                 if fout: fout.close()
                 frag_cnt += 1
-                fout = open(f"{save_dir}/frag_{frag_cnt}", 'w')
+                fout = open(f"{save_dir}/frag_{frag_cnt}", 'w', encoding='utf-8')
             if array_feat:
                 items = line.rstrip().split('\t')
                 for feat in array_feat:
@@ -241,7 +241,7 @@ def split_dataset(cfg, feat2idx, lens):
     array_feat = [feat for feat, v in cfg['feat_info']['dense'].items() if v['type'] == 'array']
     frag_size = split_cfg['frag_size']
 
-    f = open(cfg['data_file'], 'r')
+    f = open(cfg['data_file'], 'r', encoding='utf-8')
     columns = f.readline().rstrip('\n').split('\t')
     origin_column_idx = {col: i for i, col in enumerate(columns)}
 
