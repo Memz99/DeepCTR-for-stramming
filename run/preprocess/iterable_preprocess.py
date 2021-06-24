@@ -140,6 +140,10 @@ def get_feat2idx(cfg):
 def encode_and_save(cfg, feat2idx, lens):
     # statistics frequency
     from collections import defaultdict
+
+    if not cfg['feat_info']['sparse']:
+        return
+
     f = open(cfg['data_file'], 'r', encoding='utf-8')
     sparse2idx = {feat: feat2idx[feat][0] for feat in cfg['feat_info']['sparse']}
     feat2count = {feat: defaultdict(int) for feat in cfg['feat_info']['sparse']}
@@ -180,12 +184,18 @@ def save_configs(cfg, feat2idx):
         sparse_feature_info[fname] = {
             'index': feat2idx[fname],
             'vocab_load_path': f"{cfg['vocab_save_path']}/{fname}",
-            'is_sparse': feat_info['sparse'][fname]['is_sparse']
+            'is_sparse': feat_info['sparse'][fname]['is_sparse'],
+            'group': feat_info['sparse'][fname]['group']
         }
     for fname in feat_info['dense']:
-        dense_feature_info[fname] = {'index': feat2idx[fname]}
+        dense_feature_info[fname] = {
+            'index': feat2idx[fname],
+            'group': feat_info['dense'][fname]['group']
+        }
     for fname in feat_info['label']:
-        label_feature_info[fname] = {'index': feat2idx[fname]}
+        label_feature_info[fname] = {
+            'index': feat2idx[fname]
+        }
 
     data_feature_info = {
         "sparse_feature_info": sparse_feature_info,

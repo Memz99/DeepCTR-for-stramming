@@ -123,20 +123,29 @@ def initialize(cfg):
             vocab = pickle.load(open(v['vocab_load_path'], 'rb'))
             sparse_feature_columns_info[fname] = {'index': (start, start + v['index'][1] - v['index'][0]),
                                                   'vocab_size': len(vocab),
-                                                  'is_sparse': v['is_sparse']}
+                                                  'is_sparse': v['is_sparse'],
+                                                  'group': v['group']}
             start += v['index'][1] - v['index'][0]
     for fname, v in dense_feature_info.items():
         if fname in train_info['dense_features']:
-            dense_feature_columns_info[fname] = {'index': (start, start + v['index'][1] - v['index'][0])}
+            dense_feature_columns_info[fname] = {'index': (start, start + v['index'][1] - v['index'][0]),
+                                                 'group': v['group']}
             start += v['index'][1] - v['index'][0]
 
     for fname, v in label_feature_info.items():
         if fname in train_info['label_features']:
             label_feature_columns_info[fname] = v
     # Model
-    sparse_feature_columns = [SparseFeat(name, v['index'], v['vocab_size'], 8, v['is_sparse'])
+    sparse_feature_columns = [SparseFeat(name=name,
+                                         index=v['index'],
+                                         vocabulary_size=v['vocab_size'],
+                                         embedding_dim=8,
+                                         sparse_embedding=v['is_sparse'],
+                                         group=v['group'])
                               for name, v in sparse_feature_columns_info.items()]
-    dense_feature_columns = [DenseFeat(name=fname, index=v['index'])
+    dense_feature_columns = [DenseFeat(name=name,
+                                       index=v['index'],
+                                       group=v['group'])
                              for name, v in dense_feature_columns_info.items()]
 
     model = DeepFM(sparse_feature_columns, dense_feature_columns, class_num=2, device=cfg['device'])

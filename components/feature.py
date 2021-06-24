@@ -4,17 +4,17 @@ DEFAULT_GROUP_NAME = "default_group"
 
 class SparseFeat(namedtuple('SparseFeat',
                             ['name', 'index', 'vocabulary_size', 'embedding_dim', 'dimension','sparse_embedding', 'dtype', 'embedding_name',
-                             'group_name'])):
+                             'group'])):
     __slots__ = ()
 
     def __new__(cls, name, index, vocabulary_size, embedding_dim=4, sparse_embedding=False, dtype="int32",
-                embedding_name=None, group_name=DEFAULT_GROUP_NAME):
+                embedding_name=None, group=DEFAULT_GROUP_NAME):
         if embedding_name is None:
             embedding_name = name
         if embedding_dim == "auto":
             embedding_dim = 6 * int(pow(vocabulary_size, 0.25))
         return super(SparseFeat, cls).__new__(cls, name, index, vocabulary_size, embedding_dim, embedding_dim,
-                                              sparse_embedding, dtype, embedding_name, group_name)
+                                              sparse_embedding, dtype, embedding_name, group)
 
 
 class VarLenSparseFeat(namedtuple('VarLenSparseFeat',
@@ -48,12 +48,24 @@ class VarLenSparseFeat(namedtuple('VarLenSparseFeat',
     def embedding_name(self):
         return self.sparsefeat.embedding_name
 
-class DenseFeat(namedtuple('DenseFeat', ['name', 'index', 'dimension', 'dtype'])):
+
+class DenseFeat(namedtuple('DenseFeat', ['name', 'index', 'dimension', 'dtype', 'group'])):
     __slots__ = ()
 
-    def __new__(cls, name, index, dtype="float32"):
+    def __new__(cls, name, index, group, dtype="float32"):
         dimension = index[1] - index[0]
-        return super(DenseFeat, cls).__new__(cls, name, index, dimension, dtype)
+        return super(DenseFeat, cls).__new__(cls, name, index, dimension, dtype, group)
 
     def __hash__(self):
         return self.name.__hash__()
+
+
+class Group(object):
+    def __init__(self, feats):
+        self.dict = defaultdict(list)
+        for feat in feats:
+            self.dict[feat.group].append(feat.name)
+
+    def get(self, *groups):
+        return sum([self.dict[group] for group in groups], [])
+
