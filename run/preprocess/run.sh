@@ -1,11 +1,11 @@
 set -x
 root="/home/hemingzhi/.jupyter/ctr"
-table="xtr_v2"
-date="20210609"
+table="xtr_v1"
+date="20210608_"
 
 is_encode=0
-is_config=0
-is_split=1
+is_config=1
+is_split=0
 
 data_file="${root}/data/${table}/${date}"
 feat_info_json="${root}/run/preprocess/configs/${table}.json"
