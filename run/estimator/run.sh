@@ -1,12 +1,13 @@
 set -x
 root="/home/hemingzhi/.jupyter/ctr"
-do="train"
-
-task="multitask_epoch1_MSE_20210624"
-table="xtr_v1"
+do="eval"
 
 epoch=1
-train_batch_size=320
+train_batch_size=640
+
+task="multitask_epoch${epoch}_bs${train_batch_size}_MSE"
+table="xtr_v2"
+
 
 train_date="20210608"
 train_path="${root}/data/${table}/${train_date}_train_splits"

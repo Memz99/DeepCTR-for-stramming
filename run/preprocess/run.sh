@@ -1,10 +1,10 @@
 set -x
 root="/home/hemingzhi/.jupyter/ctr"
-table="xtr_v1"
-date="20210608_"
+table="xtr_v2"
+date="20210609"
 
-is_encode=1
-is_config=1
+is_encode=0
+is_config=0
 is_split=1
 
 data_file="${root}/data/${table}/${date}"
