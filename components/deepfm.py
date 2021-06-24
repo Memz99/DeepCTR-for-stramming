@@ -160,10 +160,11 @@ class DeepFM(nn.Module):
         self.embedding_dict = create_embedding_matrix(sparse_feature_columns)
         # 正则项...
 
-        input_dim = sum(feat.dimension for feat in sparse_feature_columns + dense_feature_columns)
-        self.bn = torch.nn.BatchNorm1d(input_dim)
+        dense_input_dim = sum(feat.dimension for feat in dense_feature_columns)
+        self.dense_bn = torch.nn.BatchNorm1d(dense_input_dim)
         # DNN
-        self.shared_dnn = DNN(input_dim, dnn_hidden_units[:dnn_shared_layers],
+        dnn_input_dim = sum(feat.dimension for feat in sparse_feature_columns + dense_feature_columns)
+        self.shared_dnn = DNN(dnn_input_dim, dnn_hidden_units[:dnn_shared_layers],
                activation=dnn_activation, dropout_rate=dnn_dropout)
 
         dnn_hidden_units += tuple([1])
@@ -186,17 +187,19 @@ class DeepFM(nn.Module):
                           for feat in self.dense_feature_columns]
 
         sparse_embedding_list = [
-            self.embedding_dict[feat.name]( # 取出 embedding 表
+            self.embedding_dict[feat.name](  # 取出 embedding 表
                 inputs[:, feat.index[0]:feat.index[1]].long())
             for feat in self.sparse_feature_columns]
 
         return sparse_embedding_list, dense_value_list
 
     def forward(self, inputs):
-        inputs = self.bn(inputs)
+        # inputs = self.bn(inputs)
         sparse_embedding_list, dense_value_list = self.split_tensor(inputs)
         dense_dnn_input = torch.flatten(
             torch.cat(dense_value_list, dim=-1), start_dim=1)
+        dense_dnn_input = self.dense_bn(dense_dnn_input)
+
         if sparse_embedding_list:
             sparse_dnn_input = torch.flatten(
                 torch.cat(sparse_embedding_list, dim=-1), start_dim=1)
@@ -211,10 +214,10 @@ class DeepFM(nn.Module):
             logit.append(_logit)
         logit = torch.cat(logit, dim=-1)
 
-        logit += self.linear(inputs)
-        # if len(sparse_embedding_list) > 0:  # 现在multi-task没考虑fm，要改的话应该有多少个task就建多少组fm
-        #     fm_input = torch.cat(sparse_embedding_list, dim=1)
-        #     logit += self.fm(fm_input)
+        logit += self.linear(inputs)  # terms 1
+        if len(sparse_embedding_list) > 0:  # 现在multi-task没考虑fm，要改的话应该有多少个task就建多少组fm
+            fm_input = torch.cat(sparse_embedding_list, dim=1)
+            logit += self.fm(fm_input)
 
         y_pred = torch.sigmoid(logit)
         return y_pred

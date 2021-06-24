@@ -126,6 +126,33 @@ def encode_and_save(data,
     print("encoding done!")
 
 
+def directly_preprocess(cfg):
+
+    data_file = cfg['data_file']
+    frag_size = cfg['frag_size']
+    os.makedirs(data_file + "_splits", exist_ok=True)
+
+    print("deviding...")
+    f = open(cfg['data_file'], 'r')
+    columns = f.readline().split('\t')
+
+    v = df.values
+    i = 0
+    cnt = 0
+    fi = open(f"{data_file}_splits/frag_{i}", 'w', encoding='utf-8')
+    for line in tqdm(v):
+        row = '\t'.join(line.astype(str)) + '\n'
+        if cnt == frag_size:
+            i += 1
+            fi.close()
+            fi = open(f"{data_file}_splits/frag_{i}", 'w', encoding='utf-8')
+            cnt = 0
+        fi.write(row)
+        cnt += 1
+    fi.close()
+    print("done!")
+
+
 def main(argv):
     import time
     start = time.time()
@@ -146,4 +173,9 @@ def main(argv):
     print("cost:", time.time() - start)
 
 if __name__ == '__main__':
-    app.run(main)
+    # app.run(main)
+    cfg = {
+        "data_file": "../../data/xtr_v2/20210608",
+        "frag_size": 2000
+    }
+    directly_preprocess(cfg)

@@ -41,20 +41,15 @@ def parse_config():
     cfg['save_path'] = FLAGS.save_path
 
     # configuration
-    data_feature_info = {}
-    with open(FLAGS.data_info_path, 'rb') as pkl:
-        data_feature_info['sparse_feature_info'] = pickle.load(pkl)
-        data_feature_info['dense_feature_info'] = pickle.load(pkl)
-        data_feature_info['label_feature_info'] = pickle.load(pkl)
     cfg['feature_info'] = {}
-    cfg['feature_info']['train_info'] = json.load(open(FLAGS.train_info_path, 'r'),)
-    cfg['feature_info']['data_feature_info'] = data_feature_info
+    cfg['feature_info']['train_info'] = json.load(open(FLAGS.train_info_path, 'r'))
+    cfg['feature_info']['data_feature_info'] = json.load(open(FLAGS.data_info_path, 'r'))
 
     # train param
     if cfg['is_local']:
         cfg['train_buffer_size'], cfg['eval_buffer_size'], cfg['num_workers'] = 1000, 100, 0
         cfg['train_batch_size'], cfg['eval_batch_size'] = 320, 1280
-        cfg['log_step'] = 20
+        cfg['log_step'] = 10
     else:
         cfg['train_buffer_size'], cfg['eval_buffer_size'], cfg['num_workers'] = 1000000, 100000, 7
         cfg['train_batch_size'], cfg['eval_batch_size'] = 320, 64800
@@ -84,8 +79,9 @@ def get_dataset(cfg):
 
     for fname, v in sparse_feature_info.items():
         if fname in train_info['sparse_features']:
+            vocab = pickle.load(open(v['vocab_load_path'], 'rb'))
             idxs = list(range(*v['index']))
-            encoder_items.append([idxs, v['vocab']])
+            encoder_items.append([idxs, vocab])
             ret_idxs += idxs
     for fname, v in dense_feature_info.items():
         if fname in train_info['dense_features']:
@@ -120,25 +116,19 @@ def initialize(cfg):
     sparse_feature_columns_info = dict()
     dense_feature_columns_info = dict()
     label_feature_columns_info = dict()
-    encoder_items = []
-    ret_idxs = []
     start = 0
 
     for fname, v in sparse_feature_info.items():
         if fname in train_info['sparse_features']:
+            vocab = pickle.load(open(v['vocab_load_path'], 'rb'))
             sparse_feature_columns_info[fname] = {'index': (start, start + v['index'][1] - v['index'][0]),
-                                                  'vocab_size': len(v['vocab']),
+                                                  'vocab_size': len(vocab),
                                                   'is_sparse': v['is_sparse']}
             start += v['index'][1] - v['index'][0]
-            idxs = list(range(*v['index']))
-            encoder_items.append([idxs, v['vocab']])
-            ret_idxs += idxs
     for fname, v in dense_feature_info.items():
         if fname in train_info['dense_features']:
             dense_feature_columns_info[fname] = {'index': (start, start + v['index'][1] - v['index'][0])}
             start += v['index'][1] - v['index'][0]
-            idxs = list(range(*v['index']))
-            ret_idxs += idxs
 
     for fname, v in label_feature_info.items():
         if fname in train_info['label_features']:
@@ -146,7 +136,8 @@ def initialize(cfg):
     # Model
     sparse_feature_columns = [SparseFeat(name, v['index'], v['vocab_size'], 8, v['is_sparse'])
                               for name, v in sparse_feature_columns_info.items()]
-    dense_feature_columns = [DenseFeat(name, v['index']) for name, v in dense_feature_columns_info.items()]
+    dense_feature_columns = [DenseFeat(name=fname, index=v['index'])
+                             for name, v in dense_feature_columns_info.items()]
 
     model = DeepFM(sparse_feature_columns, dense_feature_columns, class_num=2, device=cfg['device'])
 
@@ -206,16 +197,13 @@ def train(cfg, model, optims, loader):
     save_checkpoint(model, os.path.join(cfg['save_path'], 'checkpoint'))
 
 def eval(cfg, model, loader):
-    # loss_func = F.mse_loss
     loss_class = InteralMAE([*model.dense_feature_columns, *model.sparse_feature_columns],
                             l=0, r=1000000, interal_nums=50,
                             save_path=cfg['save_path'])
-    # logger = Logger(cfg['log_step'], "Test")
     for batch in loader:
         inputs, y = batch['features'].to(cfg['device']), batch['label'].squeeze().to(cfg['device'])
         y_pred = model(inputs).squeeze()
         loss_class.update(inputs.cpu().data.numpy(), y_pred.cpu().data.numpy(), y.cpu().data.numpy())
-        # logger.log_info(loss=loss_func(y_pred, y, reduction='mean').item(), size=320, epoch=0)
     loss_class.echo()
     loss_class.plot()
 
