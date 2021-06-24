@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="36456b98-6780-496a-9c2e-d32171f8bcea" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/deepfm.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/deepfm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/metrics.py" afterDir="false" />
-    </list>
+    <list default="true" id="36456b98-6780-496a-9c2e-d32171f8bcea" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -42,7 +38,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.main_test">
+  <component name="RunManager" selected="Python.iterable_preprocess">
     <configuration name="dataset" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ctr" />
       <option name="INTERPRETER_OPTIONS" value="" />

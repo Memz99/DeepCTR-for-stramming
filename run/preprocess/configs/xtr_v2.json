@@ -128,55 +128,55 @@
     },
     "se_p_7d_show_cnt": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_click_cnt": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_first_click_cnt": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_last_click_cnt": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_play_cnt": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_long_view_cnt": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_first_view_long_cnt": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_last_view_long_cnt": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_short_view_cnt": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_follow_cnt": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_like_cnt": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_slide_show": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "se_p_7d_slide_click": {
       "type": "value",
-      "group": "p_feat"
+      "group": "p"
     },
     "qp_doc_bow_embedding_score": {
       "type": "value",
