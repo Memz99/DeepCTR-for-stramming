@@ -158,7 +158,8 @@ class DeepFM(nn.Module):
         self.embedding_dict = create_embedding_matrix(sparse_feature_columns)
 
         # PRE-TRANSFORM
-        pre_input_dim = sum(feat.dimension for feat in dense_feature_columns if feat.name in self.group.get('qp', 'p', 'default'))
+        self.pre_feats = self.group.get_name('qp', 'p', 'default')
+        pre_input_dim = sum(feat.dimension for feat in dense_feature_columns if feat.name in self.pre_feats)
         self.pre_bn = torch.nn.BatchNorm1d(pre_input_dim)
 
         # FIELD-DNN
@@ -166,7 +167,8 @@ class DeepFM(nn.Module):
         # self.p_dnn = nn.Linear(p_dim, 1)
 
         # UNION-DNN
-        dnn_input_dim = sum(feat.dimension for feat in sparse_feature_columns + dense_feature_columns if feat.name in self.group.get('qp', 'p', 'default'))
+        self.dnn_feats = self.group.get_name('qp', 'p', 'default')
+        dnn_input_dim = sum(feat.dimension for feat in self.group.get_fc('qp', 'p', 'default'))
         self.shared_dnn = DNN(dnn_input_dim, dnn_hidden_units[:dnn_shared_layers],
                activation=dnn_activation, dropout_rate=dnn_dropout)
 
@@ -179,15 +181,11 @@ class DeepFM(nn.Module):
 
         # FM
         self.linear = Linear(sparse_feature_columns,
-                             [fc for fc in dense_feature_columns if fc.group not in ['raw', 'p']])
+                             [fc for fc in self.group.get_fc('qp', 'p', 'default')])
         self.fm = FM()
 
         # Output
         self.to(device)
-
-    def init_group_info(self, feature_columns):
-        ret = defaultdict(list)
-        return ret
 
     def split_tensor(self, inputs):
 
@@ -210,7 +208,7 @@ class DeepFM(nn.Module):
         sparse_embedding_list = [feat_value_dict[feat.name] for feat in self.sparse_feature_columns]
 
         dnn_dense_input = torch.flatten(
-            torch.cat([feat_value_dict[fname] for fname in self.group.get('qp', 'default')], dim=1),
+            torch.cat([feat_value_dict[fname] for fname in self.dnn_feats], dim=1),
             start_dim=1
         )
         dnn_dense_input = self.pre_bn(dnn_dense_input)

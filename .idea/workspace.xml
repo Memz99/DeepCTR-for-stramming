@@ -5,10 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/deepfm.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/deepfm.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/feature.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/feature.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/estimator/configs/xtr_v2_no_sparse.json" beforeDir="false" afterPath="$PROJECT_DIR$/run/estimator/configs/xtr_v2_no_sparse.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/estimator/main_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/run/estimator/main_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/preprocess/configs/xtr_v2.json" beforeDir="false" afterPath="$PROJECT_DIR$/run/preprocess/configs/xtr_v2.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/preprocess/iterable_preprocess.py" beforeDir="false" afterPath="$PROJECT_DIR$/run/preprocess/iterable_preprocess.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -182,7 +178,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ctr$tokenize.coverage" NAME="tokenize Coverage Results" MODIFIED="1624443166158" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/miniconda3/envs/py36/lib/python3.6" />
-    <SUITE FILE_PATH="coverage/ctr$main_test.coverage" NAME="main_test Coverage Results" MODIFIED="1624524428444" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/run/estimator" />
+    <SUITE FILE_PATH="coverage/ctr$main_test.coverage" NAME="main_test Coverage Results" MODIFIED="1624525695197" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/run/estimator" />
     <SUITE FILE_PATH="coverage/ctr$iterable_preprocess__1_.coverage" NAME="iterable_preprocess (1) Coverage Results" MODIFIED="1624443176495" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/run/preprocess" />
     <SUITE FILE_PATH="coverage/ctr$dataset.coverage" NAME="dataset Coverage Results" MODIFIED="1624465609290" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/components" />
     <SUITE FILE_PATH="coverage/ctr$iterable_preprocess.coverage" NAME="iterable_preprocess Coverage Results" MODIFIED="1624516490885" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/run/preprocess/configs" />

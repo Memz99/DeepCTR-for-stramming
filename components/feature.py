@@ -62,10 +62,18 @@ class DenseFeat(namedtuple('DenseFeat', ['name', 'index', 'dimension', 'dtype', 
 
 class Group(object):
     def __init__(self, feats):
-        self.dict = defaultdict(list)
+        self.name_dict = defaultdict(list)
         for feat in feats:
-            self.dict[feat.group].append(feat.name)
+            self.name_dict[feat.group].append(feat.name)
+        self.feat_dict = defaultdict(list)
+        for feat in feats:
+            self.feat_dict[feat.group].append(feat)
 
     def get(self, *groups):
-        return sum([self.dict[group] for group in groups], [])
+        return sum([self.name_dict[group] for group in groups], [])
 
+    def get_name(self, *groups):
+        return sum([self.name_dict[group] for group in groups], [])
+
+    def get_fc(self, *groups):
+        return sum([self.feat_dict[group] for group in groups], [])
