@@ -1,0 +1,116 @@
+{
+  "sparse": {
+  },
+  "dense": {
+    "show_cnt_30d": {
+      "type": "value"
+    },
+    "show_cnt_7d": {
+      "type": "value"
+    },
+    "click_cnt_30d": {
+      "type": "value"
+    },
+    "click_cnt_7d": {
+      "type": "value"
+    },
+    "play_cnt_30d": {
+      "type": "value"
+    },
+    "play_cnt_7d": {
+      "type": "value"
+    },
+    "like_cnt_30d": {
+      "type": "value"
+    },
+    "like_cnt_7d": {
+      "type": "value"
+    },
+    "follow_cnt_30d": {
+      "type": "value"
+    },
+    "follow_cnt_7d": {
+      "type": "value"
+    },
+    "long_view_cnt_30d": {
+      "type": "value"
+    },
+    "long_view_cnt_7d": {
+      "type": "value"
+    },
+    "short_view_cnt_30d": {
+      "type": "value"
+    },
+    "short_view_cnt_7d": {
+      "type": "value"
+    },
+    "first_click_cnt_30d": {
+      "type": "value"
+    },
+    "first_click_cnt_7d": {
+      "type": "value"
+    },
+    "last_click_cnt_30d": {
+      "type": "value"
+    },
+    "last_click_cnt_7d": {
+      "type": "value"
+    },
+    "first_view_long_cnt_30d": {
+      "type": "value"
+    },
+    "first_view_long_cnt_7d": {
+      "type": "value"
+    },
+    "last_view_long_cnt_30d": {
+      "type": "value"
+    },
+    "last_view_long_cnt_7d": {
+      "type": "value"
+    },
+    "slide_show_30d": {
+      "type": "value"
+    },
+    "slide_show_7d": {
+      "type": "value"
+    },
+    "slide_click_30d": {
+      "type": "value"
+    },
+    "slide_click_7d": {
+      "type": "value"
+    },
+    "pv": {
+      "type": "value"
+    },
+    "qp_doc_bow_embedding_score": {
+      "type": "value"
+    },
+    "qp_doc_cqr_v2": {
+      "type": "value"
+    },
+    "qp_doc_mixture_bwei": {
+      "type": "value"
+    },
+    "qp_doc_mixture_omit": {
+      "type": "value"
+    },
+    "qp_doc_omit_score": {
+      "type": "value"
+    },
+    "qp_doc_username_bwei": {
+      "type": "value"
+    },
+    "qp_doc_video_bwei": {
+      "type": "value"
+    }
+  },
+  "label": {
+    "now_click_cnt": {},
+    "now_follow_cnt": {},
+    "now_like_cnt": {},
+    "now_long_view_cnt": {},
+    "now_play_cnt": {},
+    "now_show_cnt": {}
+  }
+}
