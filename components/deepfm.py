@@ -181,7 +181,7 @@ class DeepFM(nn.Module):
 
         # FM
         self.linear = Linear(sparse_feature_columns,
-                             [fc for fc in self.group.get_fc('qp', 'p', 'default')])
+                             [fc for fc in self.group.get_fc('qp', 'default')])
         self.fm = FM()
 
         # Output

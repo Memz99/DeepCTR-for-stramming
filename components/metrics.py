@@ -137,6 +137,7 @@ class InteralMAE():
         ax.plot(x, v['MODEL_LVTR_E'], c='g', ls='-', lw=0.8, label='MODEL_LVTR_E')
         ax.set_xlabel("log2(1+show_cnt) , 30d")
         ax.set_ylabel("MAE * 100")
+        ax.set_ylim(0, 0.5)
         ax.set_title("Model Prediction vs Empirical")
         ax.legend(loc='upper left')
         fig.savefig(os.path.join(self.save_path, "fig.png"), dpi=130)
