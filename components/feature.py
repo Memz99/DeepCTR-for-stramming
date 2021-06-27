@@ -61,13 +61,18 @@ class DenseFeat(namedtuple('DenseFeat', ['name', 'index', 'dimension', 'dtype', 
 
 
 class Group(object):
-    def __init__(self, feats):
+    def __init__(self, sparse_feature_columns=(), dense_feature_columns=()):
+        sparse_feature_columns = tuple(sparse_feature_columns)
+        dense_feature_columns = tuple(dense_feature_columns)
         self.name_dict = defaultdict(list)
-        for feat in feats:
+        for feat in dense_feature_columns + sparse_feature_columns:
             self.name_dict[feat.group].append(feat.name)
         self.feat_dict = defaultdict(list)
-        for feat in feats:
+        for feat in dense_feature_columns + sparse_feature_columns:
             self.feat_dict[feat.group].append(feat)
+        if sparse_feature_columns and dense_feature_columns:
+            self.sparse = Group(sparse_feature_columns, ())
+            self.dense = Group((), dense_feature_columns)
 
     def get(self, *groups):
         return sum([self.name_dict[group] for group in groups], [])

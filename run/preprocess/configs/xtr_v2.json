@@ -2,11 +2,7 @@
   "sparse": {
     "keyword": {
       "is_sparse": true,
-      "group": "default"
-    },
-    "item_id": {
-      "is_sparse": true,
-      "group": "default"
+      "group": "q"
     }
   },
   "dense": {

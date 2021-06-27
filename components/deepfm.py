@@ -157,7 +157,7 @@ class DeepFM(nn.Module):
         self.class_num = class_num
         self.sparse_feature_columns = sparse_feature_columns
         self.dense_feature_columns = dense_feature_columns
-        self.group = Group(sparse_feature_columns + dense_feature_columns)
+        self.group = Group(sparse_feature_columns, dense_feature_columns)
 
         self.embedding_dict = create_embedding_matrix(sparse_feature_columns)
 
@@ -168,8 +168,9 @@ class DeepFM(nn.Module):
         # self.p_dnn = nn.Linear(p_dim, 1)
 
         # UNION-DNN
-        self.dnn_feats = self.group.get_name('qp', 'p', 'default')
-        dnn_input_dim = sum(feat.dimension for feat in self.group.get_fc('qp', 'p', 'default'))
+        self.dnn_dense_fc = self.group.dense.get_fc('qp', 'p', 'default')
+        self.dnn_sparse_fc = self.group.sparse.get_fc('p')
+        dnn_input_dim = sum(feat.dimension for feat in self.dnn_dense_fc + self.dnn_sparse_fc)
         self.shared_dnn = DNN(dnn_input_dim, dnn_hidden_units[:dnn_shared_layers],
                activation=dnn_activation, dropout_rate=dnn_dropout)
 
@@ -181,7 +182,7 @@ class DeepFM(nn.Module):
         ])
 
         # FM
-        self.linear_dense_fc = self.group.get_fc('qp', 'default')
+        self.linear_dense_fc = self.group.dense.get_fc('qp', 'default')
         self.linear = Linear(sparse_feature_columns, self.linear_dense_fc)
         self.fm = FM()
 
@@ -204,9 +205,9 @@ class DeepFM(nn.Module):
     def forward(self, inputs):
         feat_value_dict = self.pre_transform(inputs)
         # DNN
-        sparse_embedding_list = [feat_value_dict[fc.name] for fc in self.sparse_feature_columns]
+        sparse_embedding_list = [feat_value_dict[fc.name] for fc in self.dnn_sparse_fc]
         dnn_dense_input = torch.flatten(
-            torch.cat([feat_value_dict[fname] for fname in self.dnn_feats], dim=1),
+            torch.cat([feat_value_dict[feat.name] for feat in self.dnn_dense_fc], dim=1),
             start_dim=1
         )
         if sparse_embedding_list:
