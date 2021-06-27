@@ -263,10 +263,11 @@ def main(argv):
     feat2idx = get_feat2idx(cfg)
 
     start = time.time()
-    print("counting lines...")
-    lens = count_lines(cfg['data_file'])
-    print(f"there are {lens} lines")
-    print(f"done, cost {time.time() - start:.2f} s")
+    if cfg['is_encode'] or cfg['is_split']:
+        print("counting lines...")
+        lens = count_lines(cfg['data_file'])
+        print(f"there are {lens} lines")
+        print(f"done, cost {time.time() - start:.2f} s")
     if cfg['is_encode']:
         start = time.time()
         print("encoding...")

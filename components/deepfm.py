@@ -70,6 +70,7 @@ class Linear(nn.Module):
     def __init__(self,
                  sparse_feature_columns,
                  dense_feature_columns,
+                 manual_num=0,
                  class_num=1,
                  init_std=0.0001, device='cpu'):
         super(Linear, self).__init__()
@@ -81,12 +82,12 @@ class Linear(nn.Module):
         for tensor in self.embedding_dict.values():
             nn.init.normal_(tensor.weight, mean=0, std=init_std)
 
-        self.dense_bn = torch.nn.BatchNorm1d(sum(fc.dimension for fc in dense_feature_columns))
+        self.dense_bn = torch.nn.BatchNorm1d(sum(fc.dimension for fc in dense_feature_columns) + manual_num)
 
         if len(self.dense_feature_columns) > 0:
             self.weight = nn.Parameter(
                                 torch.Tensor(
-                                    sum(fc.dimension for fc in self.dense_feature_columns),
+                                    sum(fc.dimension for fc in self.dense_feature_columns) + manual_num,
                                     class_num
                                 ).to(device))
             torch.nn.init.normal_(self.weight, mean=0, std=init_std)
@@ -94,10 +95,10 @@ class Linear(nn.Module):
         self.bias = nn.Parameter(torch.zeros((class_num,)))
         self.class_num = class_num
 
-    def forward(self, inputs):
+    def forward(self, inputs, manual_feat=[]):
 
         dense_value_list = [inputs[:, feat.index[0]:feat.index[1]]
-                          for feat in self.dense_feature_columns]
+                          for feat in self.dense_feature_columns] + manual_feat
 
         sparse_embedding_list = [
             self.embedding_dict[feat.name]( # 取出 embedding 表
@@ -170,7 +171,7 @@ class DeepFM(nn.Module):
         # UNION-DNN
         self.dnn_dense_fc = self.group.dense.get_fc('qp', 'p', 'default')
         self.dnn_sparse_fc = []
-        dnn_input_dim = sum(feat.dimension for feat in self.dnn_dense_fc + self.dnn_sparse_fc)
+        dnn_input_dim = sum(feat.dimension for feat in self.dnn_dense_fc + self.dnn_sparse_fc) + 1  # 手工特征+1
         self.shared_dnn = DNN(dnn_input_dim, dnn_hidden_units[:dnn_shared_layers],
                activation=dnn_activation, dropout_rate=dnn_dropout)
 
@@ -183,7 +184,7 @@ class DeepFM(nn.Module):
 
         # FM
         self.linear_dense_fc = self.group.dense.get_fc('qp', 'p', 'default')
-        self.linear = Linear(sparse_feature_columns, self.linear_dense_fc)
+        self.linear = Linear(sparse_feature_columns, self.linear_dense_fc, manual_num=1)
         self.fm = FM()
 
         # Output
@@ -204,12 +205,14 @@ class DeepFM(nn.Module):
 
     def forward(self, inputs):
         feat_value_dict = self.pre_transform(inputs)
+        qp = torch.sum(feat_value_dict['query_embed'] * feat_value_dict['photo_embed'], axis=1, keepdim=True)
         # DNN
-        sparse_embedding_list = [feat_value_dict[fc.name] for fc in self.dnn_sparse_fc]
         dnn_dense_input = torch.flatten(
-            torch.cat([feat_value_dict[feat.name] for feat in self.dnn_dense_fc], dim=1),
+            torch.cat([feat_value_dict[feat.name] for feat in self.dnn_dense_fc] + [qp], dim=1),
             start_dim=1
         )
+
+        sparse_embedding_list = [feat_value_dict[fc.name] for fc in self.dnn_sparse_fc]
         if sparse_embedding_list:
             sparse_dnn_input = torch.flatten(
                 torch.cat(sparse_embedding_list, dim=-1), start_dim=1)
@@ -225,7 +228,7 @@ class DeepFM(nn.Module):
         logit = torch.cat(logit, dim=-1)
 
         # FM
-        logit += self.linear(inputs)  # terms 1
+        logit += self.linear(inputs, manual_feat=[qp])  # terms 1
         if len(sparse_embedding_list) > 0:  # 现在multi-task没考虑fm，要改的话应该有多少个task就建多少组fm
             fm_input = torch.cat(sparse_embedding_list, dim=1)
             logit += self.fm(fm_input)
