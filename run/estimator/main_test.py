@@ -49,14 +49,14 @@ def parse_config():
     if cfg['is_local']:
         cfg['train_buffer_size'], cfg['eval_buffer_size'], cfg['num_workers'] = 1000, 100, 0
         cfg['train_batch_size'], cfg['eval_batch_size'] = 320, 1280
-        cfg['log_step'] = 10
+        cfg['log_step'] = 20
     else:
         cfg['train_buffer_size'], cfg['eval_buffer_size'], cfg['num_workers'] = 1000000, 100000, 7
         cfg['train_batch_size'], cfg['eval_batch_size'] = 320, 64800
+        cfg['train_batch_size'] = FLAGS.train_batch_size
         cfg['log_step'] = 2000
 
     cfg['epoch'] = FLAGS.epoch
-    cfg['train_batch_size'] = FLAGS.train_batch_size
     cfg['device'] = 'cpu'
     use_cuda = True
     if use_cuda and torch.cuda.is_available():
