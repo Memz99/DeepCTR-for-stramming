@@ -90,7 +90,7 @@ class Logger(object):
 
 
 class Optimizers(object):
-    def __init__(self, step_size=15000):
+    def __init__(self, step_size=24000):
         self.optims = []
         self.schedulers = []
         self.step_size = step_size

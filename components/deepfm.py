@@ -169,7 +169,7 @@ class DeepFM(nn.Module):
 
         # UNION-DNN
         self.dnn_dense_fc = self.group.dense.get_fc('qp', 'p', 'default')
-        self.dnn_sparse_fc = self.group.sparse.get_fc('q')
+        self.dnn_sparse_fc = []
         dnn_input_dim = sum(feat.dimension for feat in self.dnn_dense_fc + self.dnn_sparse_fc)
         self.shared_dnn = DNN(dnn_input_dim, dnn_hidden_units[:dnn_shared_layers],
                activation=dnn_activation, dropout_rate=dnn_dropout)
@@ -182,7 +182,7 @@ class DeepFM(nn.Module):
         ])
 
         # FM
-        self.linear_dense_fc = self.group.dense.get_fc('qp', 'default')
+        self.linear_dense_fc = self.group.dense.get_fc('qp', 'p', 'default')
         self.linear = Linear(sparse_feature_columns, self.linear_dense_fc)
         self.fm = FM()
 
