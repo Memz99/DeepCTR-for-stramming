@@ -3,6 +3,10 @@
     "keyword": {
       "is_sparse": true,
       "group": "q"
+    },
+    "item_id": {
+      "is_sparse": true,
+      "group": "p"
     }
   },
   "dense": {

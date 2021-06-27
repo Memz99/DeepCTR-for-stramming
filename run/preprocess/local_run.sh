@@ -1,6 +1,6 @@
 set -x
 root="/Users/hemingzhi/Documents/Projects/ctr"
-table="xtr_v1"
+table="xtr_v2"
 date="20210608"
 
 is_encode=1
