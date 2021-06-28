@@ -1,5 +1,5 @@
 {
-  "sparse_features": {},
+  "sparse_features": [],
   "dense_features": [
     "show_cnt_30d",
     "show_cnt_7d",
@@ -28,6 +28,8 @@
     "slide_click_30d",
     "slide_click_7d",
     "pv",
+    "query_embed",
+    "photo_embed",
     "se_p_7d_show_cnt",
     "se_p_7d_click_cnt",
     "se_p_7d_first_click_cnt",
@@ -51,10 +53,8 @@
   ],
   "label_features": [
     "now_click_cnt",
-    "now_follow_cnt",
-    "now_like_cnt",
+    "now_show_cnt",
     "now_long_view_cnt",
-    "now_play_cnt",
-    "now_show_cnt"
+    "now_play_cnt"
   ]
 }

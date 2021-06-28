@@ -5,7 +5,7 @@ do="train"
 epoch=1
 train_batch_size=320
 
-task="multitask_epoch${epoch}_bs${train_batch_size}_sparse_p_MSE"
+task="multitask_epoch${epoch}_bs${train_batch_size}_qp_sparse_q_MSE"
 table="xtr_v2"
 
 

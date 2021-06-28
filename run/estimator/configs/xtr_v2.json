@@ -1,7 +1,6 @@
 {
   "sparse_features": [
-    "keyword",
-    "item_id"
+    "keyword"
   ],
   "dense_features": [
     "show_cnt_30d",
@@ -56,10 +55,8 @@
   ],
   "label_features": [
     "now_click_cnt",
-    "now_follow_cnt",
-    "now_like_cnt",
+    "now_show_cnt",
     "now_long_view_cnt",
-    "now_play_cnt",
-    "now_show_cnt"
+    "now_play_cnt"
   ]
 }
