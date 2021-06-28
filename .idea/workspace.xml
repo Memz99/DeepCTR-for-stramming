@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="36456b98-6780-496a-9c2e-d32171f8bcea" name="Default Changelist" comment="add feature: manual feature">
-      <change beforePath="$PROJECT_DIR$/components/feature.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/feature.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -156,6 +156,7 @@
       <workItem from="1624326519496" duration="94000" />
       <workItem from="1624365419753" duration="17435000" />
       <workItem from="1624465271056" duration="4409000" />
+      <workItem from="1624865817382" duration="294000" />
     </task>
     <task id="LOCAL-00001" summary="fix model bn problem">
       <created>1624776067129</created>
@@ -185,7 +186,14 @@
       <option name="project" value="LOCAL" />
       <updated>1624788731135</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="add feature: manual feature">
+      <created>1624788978314</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1624788978314</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
