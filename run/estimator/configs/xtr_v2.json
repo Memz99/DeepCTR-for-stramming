@@ -58,5 +58,16 @@
     "now_show_cnt",
     "now_long_view_cnt",
     "now_play_cnt"
+  ],
+  "eval_features": [
+    "show_cnt_30d",
+    "show_cnt_7d",
+    "click_cnt_30d",
+    "click_cnt_7d",
+    "play_cnt_30d",
+    "play_cnt_7d",
+    "long_view_cnt_30d",
+    "long_view_cnt_7d",
+    "pv"
   ]
 }
