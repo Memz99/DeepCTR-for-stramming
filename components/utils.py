@@ -115,3 +115,4 @@ def save_checkpoint(model, path):
     torch.save({
         "model": model.state_dict()
     }, path)
+

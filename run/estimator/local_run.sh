@@ -1,13 +1,13 @@
 set -x
 root="/Users/hemingzhi/Documents/Projects/ctr"
-do="train"
+do="eval"
 task="multitask_epoch1_MSE"
 table="xtr_v2"
 
 train_date="20210608"
 train_path="${root}/data/${table}/${train_date}_train_splits"
 data_info_path="${root}/data/configs/${table}"
-train_info_path="${root}/run/estimator/configs/xtr_v2.json"
+model_info_path="${root}/run/estimator/configs/xtr_v2_no_sparse.json"
 
 eval_date="20210608"
 eval_path="${root}/data/${table}/${eval_date}_eval_splits"
@@ -26,6 +26,6 @@ python ./main_test.py \
   --do $do \
   --train_path $train_path --eval_path $eval_path \
   --data_info_path $data_info_path \
-  --train_info_path $train_info_path \
+  --model_info_path $model_info_path \
   --checkpoint_load_path $checkpoint_load_path  \
   --save_path $save_path

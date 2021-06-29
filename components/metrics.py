@@ -59,17 +59,17 @@ class InteralLoss():
         return f"{self.name}: {round(self.e[interal], 3):>5.4}"
 
 class InteralMAE():
-    def __init__(self, feature_columns, l=300, r=99999999, interal_nums=100, save_path = ""):
+    def __init__(self, indicator_columns, l=300, r=99999999, interal_nums=100, save_path = ""):
         points = np.unique((2 ** np.linspace(np.log2(1+l), np.log2(1+r), interal_nums) - 1).astype(int))
         self.interals = list(zip(points[:-1], points[1:]))
 
         self.vidx = defaultdict(int)
-        for fc in feature_columns:
-            if fc.name == "pv": self.vidx['pv'] = fc.index[0]
-            if fc.name == "show_cnt_30d": self.vidx['show_cnt'] = fc.index[0]
-            if fc.name == "click_cnt_30d": self.vidx['click_cnt'] = fc.index[0]
-            if fc.name == "long_view_cnt_30d": self.vidx['long_view_cnt'] = fc.index[0]
-            if fc.name == "play_cnt_30d": self.vidx['play_cnt'] = fc.index[0]
+        for k, v in indicator_columns.items():
+            if k == "pv": self.vidx['pv'] = v['index'][0]
+            if k == "show_cnt_30d": self.vidx['show_cnt'] = v['index'][0]
+            if k == "click_cnt_30d": self.vidx['click_cnt'] = v['index'][0]
+            if k == "long_view_cnt_30d": self.vidx['long_view_cnt'] = v['index'][0]
+            if k == "play_cnt_30d": self.vidx['play_cnt'] = v['index'][0]
 
         self.n = {interal: 0. for interal in self.interals}
 
@@ -88,13 +88,14 @@ class InteralMAE():
         self.ofp.write("\t".join(
             ["pv", "show_cnt", "model_ctr", "emp_ctr", "gt_ctr", "model_lvtr", "emp_lvtr", "gt_lvtr"]) + "\n")
 
-    def update(self, inputs, pred, y):
-        v = {key: inputs[:, idx] for key, idx in self.vidx.items()}
-        emp = np.stack([v['click_cnt'] / v['show_cnt'], v['long_view_cnt'] / v['play_cnt']], axis=1)
+    def update(self, indicator, pred, y):
+        v = {key: tensor.cpu().data.numpy() for key, tensor in indicator.items()}
+        emp = np.stack([v['click_cnt_30d'] / v['show_cnt_30d'],
+                        v['long_view_cnt_30d'] / v['play_cnt_30d']], axis=1)
         emp[emp == np.inf] = 0
         for interal in self.interals:
             l, r = interal
-            lind = np.logical_and(v['show_cnt'] >= l, v['show_cnt'] < r)
+            lind = np.logical_and(v['show_cnt_30d'] >= l, v['show_cnt_30d'] < r)
             n1 = sum(lind)
             if n1 > 0:
                 self.n[interal] += n1
@@ -108,7 +109,7 @@ class InteralMAE():
                     if e.name == 'GT_LVTR':      e.update(interal,   _gt[:, 1],         0, n1, self.n[interal])
 
         lines = ['\t'.join(line) for line in zip(v['pv'].astype(str),
-                                                 v['show_cnt'].astype(str),
+                                                 v['show_cnt_30d'].astype(str),
                                                  pred[:, 0].round(3).astype(str),
                                                  emp[:, 0].round(3).astype(str),
                                                  y[:, 0].round(3).astype(str),
