@@ -122,7 +122,7 @@ class InteralMAE():
         np.set_printoptions(suppress=True)
         print("SHOW_CNT Interal MAE:")
         for interal in self.interals:
-            s = '\t'.join([f"INTERAL: {str(interal):>15}\tN: {self.n[interal]:>10}"] + [e.log(interal) for e in self.e])
+            s = '\t'.join([f"INTERAL: {str(interal):>18}\tN: {self.n[interal]:>10}"] + [e.log(interal) for e in self.e])
             print(s)
 
     def plot(self):
