@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="36456b98-6780-496a-9c2e-d32171f8bcea" name="Default Changelist" comment="add feature: manual feature">
-      <change beforePath="$PROJECT_DIR$/components/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/metrics.py" afterDir="false" />
-    </list>
+    <list default="true" id="36456b98-6780-496a-9c2e-d32171f8bcea" name="Default Changelist" comment="add feature: manual feature" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -162,7 +160,7 @@
       <workItem from="1624365419753" duration="17435000" />
       <workItem from="1624465271056" duration="4409000" />
       <workItem from="1624865817382" duration="13530000" />
-      <workItem from="1624954139162" duration="1984000" />
+      <workItem from="1624954139162" duration="2357000" />
     </task>
     <task id="LOCAL-00001" summary="fix model bn problem">
       <created>1624776067129</created>
