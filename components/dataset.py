@@ -74,7 +74,7 @@ class TrainDataset(IterableDataset):
                         row[idxs] = [vocab[row[i]] if row[i] in vocab else vocab["__OOV__"]
                                      for i in idxs]
                     feat = row[ret_idxs].astype("float32")
-                    if feat[0] <= 2: continue
+                    # if feat[0] <= 2: continue
                     click, show, play, lv = row[[click_idx, show_idx, play_idx, lv_idx]].astype("float32")
                     label = np.array([click_rate(click, show), lv_rate(play, show, lv)]).astype("float32")
                     yield feat, label
@@ -123,27 +123,20 @@ class EvalDataset(IterableDataset):
                 line = f.readline()
                 if not line:
                     break
-                # try:
-                row = np.array(line.strip().split('\t'))
-                for idxs, vocab in encoder_items:
-                    row[idxs] = [vocab[row[i]] if row[i] in vocab else vocab["__OOV__"]
-                                 for i in idxs]
-                feat = row[ret_idxs].astype("float32")
-                if feat[0] <= 2: continue
-                # click, show, play, lv = row[[click_idx, show_idx, play_idx, lv_idx]].astype("float32")
-                indicator = {k: row[v].astype("float32") for k, v in indicator_idx_dict.items()}
-                # indicator = {
-                #     'click_cnt': click,
-                #     'show_cnt': show,
-                #     'play_cnt': play,
-                #     'long_view_cnt': lv
-                # }
-                click, show, play, lv = row[[now_click_idx, now_show_idx, now_play_idx, now_lv_idx]].astype("float32")
-                label = np.array([click_rate(click, show), lv_rate(play, show, lv)]).astype("float32")
-                yield feat, indicator, label
-                # except:
-                #     print("error line:", line)
-                #     continue
+                try:
+                    row = np.array(line.strip().split('\t'))
+                    for idxs, vocab in encoder_items:
+                        row[idxs] = [vocab[row[i]] if row[i] in vocab else vocab["__OOV__"]
+                                     for i in idxs]
+                    feat = row[ret_idxs].astype("float32")
+                    # if feat[0] <= 2: continue
+                    indicator = {k: row[v].astype("float32") for k, v in indicator_idx_dict.items()}
+                    click, show, play, lv = row[[now_click_idx, now_show_idx, now_play_idx, now_lv_idx]].astype("float32")
+                    label = np.array([click_rate(click, show), lv_rate(play, show, lv)]).astype("float32")
+                    yield feat, indicator, label
+                except:
+                   print("error line:", line)
+                   continue
 
 
     def reset(self):

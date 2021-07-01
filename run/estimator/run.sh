@@ -1,18 +1,18 @@
 set -x
 root="/home/hemingzhi/.jupyter/ctr"
-do="train"
+do="eval"
 
 epoch=1
 train_batch_size=320
 
-task="multitask_epoch${epoch}_bs${train_batch_size}_qp_sparse_q_MSE"
+task="multitask_epoch${epoch}_bs${train_batch_size}_qp_MSE"
 table="xtr_v2"
 
 
 train_date="20210608"
 train_path="${root}/data/${table}/${train_date}_train_splits"
 data_info_path="${root}/data/configs/${table}"
-model_info_path="${root}/run/estimator/configs/xtr_v2.json"
+model_info_path="${root}/run/estimator/configs/xtr_v2_no_sparse.json"
 
 eval_date="20210609"
 eval_path="${root}/data/${table}/${eval_date}_eval_splits"
@@ -36,3 +36,7 @@ python ./main_test.py \
   --checkpoint_load_path $checkpoint_load_path  \
   --epoch $epoch --train_batch_size $train_batch_size
 
+if [ "$do" = "eval" ]:
+then
+  python ./post_analyse.py --result_dir $save_path
+fi

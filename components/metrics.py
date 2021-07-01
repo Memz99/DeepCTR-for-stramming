@@ -116,7 +116,7 @@ class InteralMAE():
                                                  pred[:, 1].round(3).astype(str),
                                                  emp[:, 1].round(3).astype(str),
                                                  y[:, 1].round(3).astype(str))]
-        self.ofp.write('\n'.join(lines))
+        self.ofp.write('\n'.join(lines) + '\n')
 
     def echo(self):
         np.set_printoptions(suppress=True)
