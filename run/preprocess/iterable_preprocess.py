@@ -30,21 +30,21 @@ def parse_config():
         "is_config": True,
         "is_split": True,
         "data_file": "/Users/hemingzhi/Documents/Projects/ctr/data/xtr_v2/20210608",
-        "feat_info": {
-            "sparse": {
-                "keyword": {"is_sparse": True},
-                "item_id": {"is_sparse": True},
-            },
-            "dense": {
-                "show_cnt_30d": {"type": "value"},
-                "query_embed": {"type": "array"},
-                "photo_embed": {"type": "array"},
-            },
-            "label":{
-                "now_show_cnt": {},
-                "now_click_cnt": {}
-            },
-        },
+#         "feat_info": {
+#             "sparse": {
+#                 "keyword": {"is_sparse": True},
+#                 "item_id": {"is_sparse": True},
+#             },
+#             "dense": {
+#                 "show_cnt_30d": {"type": "value"},
+#                 "query_embed": {"type": "array"},
+#                 "photo_embed": {"type": "array"},
+#             },
+#             "label":{
+#                 "now_show_cnt": {},
+#                 "now_click_cnt": {}
+#             },
+#         },
         "encode_info": {
             "topk": 10
         },

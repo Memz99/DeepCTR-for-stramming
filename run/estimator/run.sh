@@ -1,20 +1,20 @@
 set -x
 root="/home/hemingzhi/.jupyter/ctr"
-do="eval"
+do="train"
 
 epoch=1
 train_batch_size=320
 
-task="multitask_epoch${epoch}_bs${train_batch_size}_qp_MSE"
-table="xtr_v2"
+task="multitask_epoch${epoch}_bs${train_batch_size}_qp_MSE_7d"
+table="xtr_v3"
 
 
-train_date="20210608"
+train_date="20210721_high_photo"
 train_path="${root}/data/${table}/${train_date}_train_splits"
 data_info_path="${root}/data/configs/${table}"
 model_info_path="${root}/run/estimator/configs/xtr_v2_no_sparse.json"
 
-eval_date="20210609"
+eval_date="20210722_high_photo"
 eval_path="${root}/data/${table}/${eval_date}_eval_splits"
 checkpoint_load_path="${root}/result/${table}/${train_date}/${task}_train/checkpoint"
 
