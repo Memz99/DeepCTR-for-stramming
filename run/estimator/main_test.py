@@ -74,7 +74,6 @@ def get_dataset(cfg):
 
     # Parse
     label_feature_columns_info = {}
-    eval_indicator_columns_info = {}
     encoder_items = []
     ret_idxs = []
 
@@ -94,16 +93,18 @@ def get_dataset(cfg):
         if fname in model_info['label_features']:
             label_feature_columns_info[fname] = v
 
-    for fname, v in {**sparse_feature_info, **dense_feature_info, **label_feature_info}.items():
-        if fname in model_info['eval_features']:
-            eval_indicator_columns_info[fname] = v
-
     if cfg['do'] == 'train':
         files = sorted([os.path.join(cfg['train_path'], file) for file in os.listdir(cfg['train_path'])])
         ds = TrainDataset(files, encoder_items, ret_idxs, label_feature_columns_info)  # label encode的过程在dataset中定义
         ds = BufferedShuffleDataset(ds, cfg['train_buffer_size'])
         loader = DataLoader(ds, batch_size=cfg['train_batch_size'], num_workers=cfg['num_workers'])
+
     if cfg['do'] == 'eval':
+        eval_indicator_columns_info = {}
+        for fname, v in {**sparse_feature_info, **dense_feature_info, **label_feature_info}.items():
+            if fname in model_info['eval_features']:
+                eval_indicator_columns_info[fname] = v
+
         files = sorted([os.path.join(cfg['eval_path'], file) for file in os.listdir(cfg['eval_path'])])
         ds = EvalDataset(files, encoder_items, ret_idxs,
                          label_feature_columns_info, eval_indicator_columns_info)  # eval indicator用于评估使用
@@ -124,7 +125,6 @@ def initialize(cfg):
     sparse_feature_columns_info = dict()
     dense_feature_columns_info = dict()
     label_feature_columns_info = dict()
-    eval_indicator_columns_info = {}
     start = 0
 
     for fname, v in sparse_feature_info.items():
@@ -145,9 +145,6 @@ def initialize(cfg):
         if fname in model_info['label_features']:
             label_feature_columns_info[fname] = v
 
-    for fname, v in {**sparse_feature_info, **dense_feature_info, **label_feature_info}.items():
-        if fname in model_info['eval_features']:
-            eval_indicator_columns_info[fname] = v
     # Model
     sparse_feature_columns = [SparseFeat(name=name,
                                          index=v['index'],
@@ -164,6 +161,10 @@ def initialize(cfg):
     model = DeepFM(sparse_feature_columns, dense_feature_columns, class_num=2, device=cfg['device'])
 
     _ = model.to(cfg['device'])
+
+    params = {
+        'cfg': cfg,
+    }
 
     if cfg['do'] == "train":
         optims = Optimizers()
@@ -185,14 +186,15 @@ def initialize(cfg):
             optims.add(torch.optim.Adam(dense_params))
 
     if cfg['do'] == 'eval':
+        eval_indicator_columns_info = {}
+        for fname, v in {**sparse_feature_info, **dense_feature_info, **label_feature_info}.items():
+            if fname in model_info['eval_features']:
+                eval_indicator_columns_info[fname] = v
+
         checkpoint = torch.load(cfg['checkpoint_load_path'])
         model.load_state_dict(checkpoint['model'])
         optims = None
-
-    params = {
-        'cfg': cfg,
-        'indicator_columns': eval_indicator_columns_info
-    }
+        params['indicator_columns'] = eval_indicator_columns_info
 
     estimator = Estimator(model=model, optims=optims, params=params)
     return estimator

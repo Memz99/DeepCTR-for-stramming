@@ -89,7 +89,6 @@ class TrainDataset(IterableDataset):
         else:
             rank, num_workers = 0, 1
         worker_files = [self.files[i] for i in range(rank, len(self.files), num_workers)]
-        #  print(worker_files)
         self.iterator = self._iterator(worker_files, self.encoder_items, self.ret_idxs, self.label_info)
 
     def __iter__(self):
@@ -135,8 +134,8 @@ class EvalDataset(IterableDataset):
                     label = np.array([click_rate(click, show), lv_rate(play, show, lv)]).astype("float32")
                     yield feat, indicator, label
                 except:
-                   print("error line:", line)
-                   continue
+                    print("error line:", line)
+                    continue
 
 
     def reset(self):
