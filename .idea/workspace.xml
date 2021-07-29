@@ -4,7 +4,8 @@
     <list default="true" id="36456b98-6780-496a-9c2e-d32171f8bcea" name="Default Changelist" comment="add feature: manual feature">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run/estimator/main_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/run/estimator/main_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run/estimator/local_run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run/estimator/local_run.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run/preprocess/local_run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run/preprocess/local_run.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +107,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/run/estimator/main_test.py" />
-      <option name="PARAMETERS" value="--root $PROJECT_DIR$ --is_local --do eval --train_path $PROJECT_DIR$/data/xtr_v2/20210608_train_splits --eval_path $PROJECT_DIR$/data/xtr_v2/20210608_eval_splits --data_info_path $PROJECT_DIR$/data/configs/xtr_v2 --model_info_path $PROJECT_DIR$/run/estimator/configs/xtr_v2_no_sparse.json --checkpoint_load_path $PROJECT_DIR$/result/xtr_v2/20210608/multitask_epoch1_MSE_train/checkpoint --save_path $PROJECT_DIR$/result/xtr_v2/20210608/multitask_epoch1_MSE_eval" />
+      <option name="PARAMETERS" value="--root $PROJECT_DIR$ --is_local --do train --train_path $PROJECT_DIR$/data/xtr_v3/20210721_high_photo_train_splits --eval_path $PROJECT_DIR$/data/xtr_v3/20210721_high_photo_eval_splits --data_info_path $PROJECT_DIR$/data/configs/xtr_v3 --model_info_path $PROJECT_DIR$/run/estimator/configs/xtr_v3.json --checkpoint_load_path $PROJECT_DIR$/result/xtr_v3/20210721_high_photo/multitask_epoch1_MSE_train/checkpoint --save_path $PROJECT_DIR$/result/xtr_v3/20210721_high_photo/multitask_epoch1_MSE_train" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -137,10 +138,10 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.dataset" />
-      <item itemvalue="Python.iterable_preprocess" />
       <item itemvalue="Python.main_test" />
+      <item itemvalue="Python.iterable_preprocess" />
       <item itemvalue="Python.tokenize" />
+      <item itemvalue="Python.dataset" />
     </list>
     <recent_temporary>
       <list>
@@ -245,7 +246,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ctr$tokenize.coverage" NAME="tokenize Coverage Results" MODIFIED="1624443166158" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/miniconda3/envs/py36/lib/python3.6" />
-    <SUITE FILE_PATH="coverage/ctr$main_test.coverage" NAME="main_test Coverage Results" MODIFIED="1624959494587" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/run/estimator" />
+    <SUITE FILE_PATH="coverage/ctr$main_test.coverage" NAME="main_test Coverage Results" MODIFIED="1627528993833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/run/estimator" />
     <SUITE FILE_PATH="coverage/ctr$iterable_preprocess__1_.coverage" NAME="iterable_preprocess (1) Coverage Results" MODIFIED="1624443176495" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/run/preprocess" />
     <SUITE FILE_PATH="coverage/ctr$dataset.coverage" NAME="dataset Coverage Results" MODIFIED="1624465609290" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/components" />
     <SUITE FILE_PATH="coverage/ctr$iterable_preprocess.coverage" NAME="iterable_preprocess Coverage Results" MODIFIED="1624528209391" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/run/preprocess/configs" />

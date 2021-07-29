@@ -58,29 +58,29 @@ class TrainDataset(IterableDataset):
 
     @staticmethod
     def _iterator(files, encoder_items, ret_idxs, label_info):
-        click_idx = label_info['now_click_cnt']['index'][0]
-        show_idx = label_info['now_show_cnt']['index'][0]
-        play_idx = label_info['now_play_cnt']['index'][0]
-        lv_idx = label_info['now_long_view_cnt']['index'][0]
+        click_idx = label_info['now_click_cnt_30d']['index'][0]
+        show_idx = label_info['now_show_cnt_30d']['index'][0]
+        play_idx = label_info['now_play_cnt_30d']['index'][0]
+        lv_idx = label_info['now_long_view_cnt_30d']['index'][0]
         for file in files:
             f = open(file, 'r', encoding="utf-8")
             while True:
                 line = f.readline()
                 if not line:
                     break
-                try:
-                    row = np.array(line.strip().split('\t'))
-                    for idxs, vocab in encoder_items:
-                        row[idxs] = [vocab[row[i]] if row[i] in vocab else vocab["__OOV__"]
-                                     for i in idxs]
-                    feat = row[ret_idxs].astype("float32")
-                    # if feat[0] <= 2: continue
-                    click, show, play, lv = row[[click_idx, show_idx, play_idx, lv_idx]].astype("float32")
-                    label = np.array([click_rate(click, show), lv_rate(play, show, lv)]).astype("float32")
-                    yield feat, label
-                except:
-                    print("error line:", line)
-                    continue
+                # try:
+                row = np.array(line.strip().split('\t'))
+                for idxs, vocab in encoder_items:
+                    row[idxs] = [vocab[row[i]] if row[i] in vocab else vocab["__OOV__"]
+                                 for i in idxs]
+                feat = row[ret_idxs].astype("float32")
+                # if feat[0] <= 2: continue
+                click, show, play, lv = row[[click_idx, show_idx, play_idx, lv_idx]].astype("float32")
+                label = np.array([click_rate(click, show), lv_rate(play, show, lv)]).astype("float32")
+                yield feat, label
+                # except:
+                #     print("error line:", line)
+                #     continue
 
     def reset(self):
         worker_info = torch.utils.data.get_worker_info()
@@ -112,10 +112,10 @@ class EvalDataset(IterableDataset):
     @staticmethod
     def _iterator(files, encoder_items, ret_idxs, label_info, eval_info):
         indicator_idx_dict = {k: v['index'][0] for k, v in eval_info.items()}
-        now_click_idx = label_info['now_click_cnt']['index'][0]
-        now_show_idx = label_info['now_show_cnt']['index'][0]
-        now_play_idx = label_info['now_play_cnt']['index'][0]
-        now_lv_idx = label_info['now_long_view_cnt']['index'][0]
+        now_click_idx = label_info['now_click_cnt_30d']['index'][0]
+        now_show_idx = label_info['now_show_cnt_30d']['index'][0]
+        now_play_idx = label_info['now_play_cnt_30d']['index'][0]
+        now_lv_idx = label_info['now_long_view_cnt_30d']['index'][0]
         for file in files:
             f = open(file, 'r', encoding="utf-8")
             while True:

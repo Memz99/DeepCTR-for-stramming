@@ -1,7 +1,7 @@
 set -x
 root="/Users/hemingzhi/Documents/Projects/ctr"
-table="xtr_v2"
-date="20210608"
+table="xtr_v3"
+date="20210721_high_photo"
 
 is_encode=1
 is_config=1
