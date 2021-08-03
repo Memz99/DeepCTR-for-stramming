@@ -37,7 +37,7 @@ def click_rate(click, show):
 
 def lv_rate(play, show, lv):
     if play + show <= 0:
-        raise
+        return 0
     if play > 0:
         label = lv / play if play > lv else 1
     else:

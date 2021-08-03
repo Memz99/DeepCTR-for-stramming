@@ -54,10 +54,6 @@
     "qp_doc_video_bwei"
   ],
   "label_features": [
-    "now_click_cnt_7d",
-    "now_show_cnt_7d",
-    "now_long_view_cnt_7d",
-    "now_play_cnt_7d",
     "now_click_cnt_30d",
     "now_show_cnt_30d",
     "now_long_view_cnt_30d",

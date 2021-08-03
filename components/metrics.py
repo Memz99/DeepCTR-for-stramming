@@ -66,10 +66,10 @@ class InteralMAE():
         self.vidx = defaultdict(int)
         for k, v in indicator_columns.items():
             if k == "pv": self.vidx['pv'] = v['index'][0]
-            if k == "show_cnt_30d": self.vidx['show_cnt'] = v['index'][0]
-            if k == "click_cnt_30d": self.vidx['click_cnt'] = v['index'][0]
-            if k == "long_view_cnt_30d": self.vidx['long_view_cnt'] = v['index'][0]
-            if k == "play_cnt_30d": self.vidx['play_cnt'] = v['index'][0]
+            if k == "show_cnt_7d": self.vidx['show_cnt'] = v['index'][0]
+            if k == "click_cnt_7d": self.vidx['click_cnt'] = v['index'][0]
+            if k == "long_view_cnt_7d": self.vidx['long_view_cnt'] = v['index'][0]
+            if k == "play_cnt_7d": self.vidx['play_cnt'] = v['index'][0]
 
         self.n = {interal: 0. for interal in self.interals}
 
@@ -90,12 +90,12 @@ class InteralMAE():
 
     def update(self, indicator, pred, y):
         v = {key: tensor.cpu().data.numpy() for key, tensor in indicator.items()}
-        emp = np.stack([v['click_cnt_30d'] / v['show_cnt_30d'],
-                        v['long_view_cnt_30d'] / v['play_cnt_30d']], axis=1)
+        emp = np.stack([v['click_cnt_7d'] / v['show_cnt_7d'],
+                        v['long_view_cnt_7d'] / v['play_cnt_7d']], axis=1)
         emp[emp == np.inf] = 0
         for interal in self.interals:
             l, r = interal
-            lind = np.logical_and(v['show_cnt_30d'] >= l, v['show_cnt_30d'] < r)
+            lind = np.logical_and(v['show_cnt_7d'] >= l, v['show_cnt_7d'] < r)
             n1 = sum(lind)
             if n1 > 0:
                 self.n[interal] += n1
@@ -109,7 +109,7 @@ class InteralMAE():
                     if e.name == 'GT_LVTR':      e.update(interal,   _gt[:, 1],         0, n1, self.n[interal])
 
         lines = ['\t'.join(line) for line in zip(v['pv'].astype(str),
-                                                 v['show_cnt_30d'].astype(str),
+                                                 v['show_cnt_7d'].astype(str),
                                                  pred[:, 0].round(3).astype(str),
                                                  emp[:, 0].round(3).astype(str),
                                                  y[:, 0].round(3).astype(str),

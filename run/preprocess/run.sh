@@ -1,7 +1,7 @@
 set -x
 root="/home/hemingzhi/.jupyter/ctr"
 table="xtr_v3"
-date="20210721_high_photo"
+date="20210721"
 
 is_encode=1
 is_config=1

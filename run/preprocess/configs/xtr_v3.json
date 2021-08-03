@@ -3,6 +3,10 @@
     "keyword": {
       "is_sparse": true,
       "group": "default"
+    },
+    "item_id": {
+      "is_sparse": true,
+      "group": "default"
     }
   },
   "dense": {
@@ -204,10 +208,6 @@
     }
   },
   "label": {
-    "now_click_cnt_7d": {},
-    "now_long_view_cnt_7d": {},
-    "now_play_cnt_7d": {},
-    "now_show_cnt_7d": {},
     "now_click_cnt_30d": {},
     "now_long_view_cnt_30d": {},
     "now_play_cnt_30d": {},
